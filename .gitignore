@@ -5,6 +5,7 @@
 
 # Gradle and Kotlin caches
 .gradle/
+.gradle-user-home/
 .kotlin/
 **/build/
 
