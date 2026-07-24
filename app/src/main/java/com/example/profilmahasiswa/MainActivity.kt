@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.profilmahasiswa.screens.ProfileScreen
+import com.example.profilmahasiswa.screens.profile.StudentProfileRoute
 import com.example.profilmahasiswa.ui.theme.ProfilMahasiswaTheme
 
 class MainActivity : ComponentActivity() {
@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             ProfilMahasiswaTheme {
-                ProfileScreen()
+                StudentProfileRoute()
             }
         }
     }
