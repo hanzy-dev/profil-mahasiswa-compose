@@ -149,6 +149,7 @@ fun AcademicInfo(
 fun ContactInformationCard(
     profile: StudentProfile,
     isEditing: Boolean,
+    fieldErrors: ProfileFieldErrors,
     onEmailChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -173,6 +174,10 @@ fun ContactInformationCard(
                 label = stringResource(R.string.label_email),
                 value = profile.email,
                 enabled = isEditing,
+                error = fieldErrors.email,
+                requiredError = R.string.error_email_required,
+                tooLongError = null,
+                invalidFormatError = R.string.error_email_invalid,
                 onValueChange = onEmailChange
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -181,6 +186,10 @@ fun ContactInformationCard(
                 label = stringResource(R.string.label_phone),
                 value = profile.phone,
                 enabled = isEditing,
+                error = fieldErrors.phone,
+                requiredError = R.string.error_phone_required,
+                tooLongError = null,
+                invalidFormatError = R.string.error_phone_invalid,
                 onValueChange = onPhoneChange
             )
         }
@@ -190,6 +199,7 @@ fun ContactInformationCard(
 @Composable
 fun ProfileDetailsCard(
     profile: StudentProfile,
+    fieldErrors: ProfileFieldErrors,
     onNameChange: (String) -> Unit,
     onStudyProgramChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -213,6 +223,10 @@ fun ProfileDetailsCard(
                 label = stringResource(R.string.label_name),
                 value = profile.name,
                 enabled = true,
+                error = fieldErrors.name,
+                requiredError = R.string.error_name_required,
+                tooLongError = R.string.error_name_too_long,
+                invalidFormatError = null,
                 onValueChange = onNameChange
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -221,6 +235,10 @@ fun ProfileDetailsCard(
                 label = stringResource(R.string.label_study_program),
                 value = profile.studyProgram,
                 enabled = true,
+                error = fieldErrors.studyProgram,
+                requiredError = R.string.error_study_program_required,
+                tooLongError = R.string.error_study_program_too_long,
+                invalidFormatError = null,
                 onValueChange = onStudyProgramChange
             )
         }
@@ -233,9 +251,20 @@ fun ContactField(
     label: String,
     value: String,
     enabled: Boolean,
+    error: ProfileFieldError? = null,
+    requiredError: Int,
+    tooLongError: Int?,
+    invalidFormatError: Int?,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val errorMessage = when (error) {
+        ProfileFieldError.Required -> stringResource(requiredError)
+        ProfileFieldError.TooLong -> tooLongError?.let { stringResource(it) }
+        ProfileFieldError.InvalidFormat -> invalidFormatError?.let { stringResource(it) }
+        null -> null
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -264,7 +293,11 @@ fun ContactField(
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,
+            isError = errorMessage != null,
             label = { Text(label) },
+            supportingText = errorMessage?.let { message ->
+                { Text(text = message) }
+            },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )

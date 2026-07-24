@@ -10,6 +10,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -29,6 +31,7 @@ import com.muhammadfarhan.profilmahasiswa.ui.theme.ProfilMahasiswaTheme
 @Composable
 fun StudentProfileScreen(
     uiState: StudentProfileUiState,
+    snackbarHostState: SnackbarHostState,
     onEditClick: () -> Unit,
     onSaveClick: () -> Unit,
     onCancelClick: () -> Unit,
@@ -40,6 +43,7 @@ fun StudentProfileScreen(
 ) {
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -75,6 +79,7 @@ fun StudentProfileScreen(
             if (uiState.isEditing) {
                 ProfileDetailsCard(
                     profile = uiState.draftProfile,
+                    fieldErrors = uiState.fieldErrors,
                     onNameChange = onNameChange,
                     onStudyProgramChange = onStudyProgramChange
                 )
@@ -83,13 +88,14 @@ fun StudentProfileScreen(
             ContactInformationCard(
                 profile = uiState.displayedProfile,
                 isEditing = uiState.isEditing,
+                fieldErrors = uiState.fieldErrors,
                 onEmailChange = onEmailChange,
                 onPhoneChange = onPhoneChange
             )
             Spacer(modifier = Modifier.height(24.dp))
             ProfileActions(
                 isEditing = uiState.isEditing,
-                saveEnabled = uiState.hasChanges,
+                saveEnabled = uiState.canSave,
                 onEditClick = onEditClick,
                 onSaveClick = onSaveClick,
                 onCancelClick = onCancelClick
@@ -109,6 +115,7 @@ private fun StudentProfileViewPreview() {
     ProfilMahasiswaTheme {
         StudentProfileScreen(
             uiState = StudentProfileUiState(savedProfile = DefaultStudentProfile),
+            snackbarHostState = SnackbarHostState(),
             onEditClick = {},
             onSaveClick = {},
             onCancelClick = {},
@@ -134,6 +141,7 @@ private fun StudentProfileEditPreview() {
                 draftProfile = DefaultStudentProfile.copy(name = "Muhammad Farhan A."),
                 isEditing = true
             ),
+            snackbarHostState = SnackbarHostState(),
             onEditClick = {},
             onSaveClick = {},
             onCancelClick = {},
