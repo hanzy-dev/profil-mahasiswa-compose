@@ -30,7 +30,10 @@ import com.muhammadfarhan.profilmahasiswa.ui.theme.ProfilMahasiswaTheme
 fun StudentProfileScreen(
     uiState: StudentProfileUiState,
     onEditClick: () -> Unit,
-    onDoneClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onCancelClick: () -> Unit,
+    onNameChange: (String) -> Unit,
+    onStudyProgramChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -67,18 +70,29 @@ fun StudentProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            ProfileHeader(profile = uiState.profile)
+            ProfileHeader(profile = uiState.displayedProfile)
             Spacer(modifier = Modifier.height(24.dp))
+            if (uiState.isEditing) {
+                ProfileDetailsCard(
+                    profile = uiState.draftProfile,
+                    onNameChange = onNameChange,
+                    onStudyProgramChange = onStudyProgramChange
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
             ContactInformationCard(
-                profile = uiState.profile,
+                profile = uiState.displayedProfile,
                 isEditing = uiState.isEditing,
                 onEmailChange = onEmailChange,
                 onPhoneChange = onPhoneChange
             )
             Spacer(modifier = Modifier.height(24.dp))
-            ProfileActionButton(
+            ProfileActions(
                 isEditing = uiState.isEditing,
-                onClick = if (uiState.isEditing) onDoneClick else onEditClick
+                saveEnabled = uiState.hasChanges,
+                onEditClick = onEditClick,
+                onSaveClick = onSaveClick,
+                onCancelClick = onCancelClick
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -94,9 +108,12 @@ fun StudentProfileScreen(
 private fun StudentProfileViewPreview() {
     ProfilMahasiswaTheme {
         StudentProfileScreen(
-            uiState = StudentProfileUiState(profile = DefaultStudentProfile),
+            uiState = StudentProfileUiState(savedProfile = DefaultStudentProfile),
             onEditClick = {},
-            onDoneClick = {},
+            onSaveClick = {},
+            onCancelClick = {},
+            onNameChange = {},
+            onStudyProgramChange = {},
             onEmailChange = {},
             onPhoneChange = {}
         )
@@ -113,11 +130,15 @@ private fun StudentProfileEditPreview() {
     ProfilMahasiswaTheme {
         StudentProfileScreen(
             uiState = StudentProfileUiState(
-                profile = DefaultStudentProfile,
+                savedProfile = DefaultStudentProfile,
+                draftProfile = DefaultStudentProfile.copy(name = "Muhammad Farhan A."),
                 isEditing = true
             ),
             onEditClick = {},
-            onDoneClick = {},
+            onSaveClick = {},
+            onCancelClick = {},
+            onNameChange = {},
+            onStudyProgramChange = {},
             onEmailChange = {},
             onPhoneChange = {}
         )

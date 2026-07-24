@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -187,6 +188,46 @@ fun ContactInformationCard(
 }
 
 @Composable
+fun ProfileDetailsCard(
+    profile: StudentProfile,
+    onNameChange: (String) -> Unit,
+    onStudyProgramChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                text = stringResource(R.string.profile_information),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            ContactField(
+                icon = Icons.Default.Person,
+                label = stringResource(R.string.label_name),
+                value = profile.name,
+                enabled = true,
+                onValueChange = onNameChange
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            ContactField(
+                icon = Icons.Default.School,
+                label = stringResource(R.string.label_study_program),
+                value = profile.studyProgram,
+                enabled = true,
+                onValueChange = onStudyProgramChange
+            )
+        }
+    }
+}
+
+@Composable
 fun ContactField(
     icon: ImageVector,
     label: String,
@@ -231,33 +272,59 @@ fun ContactField(
 }
 
 @Composable
-fun ProfileActionButton(
+fun ProfileActions(
     isEditing: Boolean,
-    onClick: () -> Unit,
+    saveEnabled: Boolean,
+    onEditClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onCancelClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(50.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Icon(
-            imageVector = if (isEditing) Icons.Default.Check else Icons.Default.Edit,
-            contentDescription = null,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = stringResource(
-                if (isEditing) {
-                    R.string.action_done
-                } else {
-                    R.string.action_edit_profile
-                }
-            ),
-            fontWeight = FontWeight.Medium
-        )
+    if (isEditing) {
+        Row(modifier = modifier.fillMaxWidth()) {
+            OutlinedButton(
+                onClick = onCancelClick,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(50.dp)
+            ) {
+                Text(text = stringResource(R.string.action_cancel))
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Button(
+                onClick = onSaveClick,
+                enabled = saveEnabled,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(50.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = stringResource(R.string.action_save))
+            }
+        }
+    } else {
+        Button(
+            onClick = onEditClick,
+            modifier = modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(R.string.action_edit_profile),
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }

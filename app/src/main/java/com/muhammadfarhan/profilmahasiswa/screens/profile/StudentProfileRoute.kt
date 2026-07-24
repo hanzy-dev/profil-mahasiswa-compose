@@ -9,19 +9,37 @@ import com.muhammadfarhan.profilmahasiswa.model.DefaultStudentProfile
 
 @Composable
 fun StudentProfileRoute() {
-    var profile by rememberSaveable(stateSaver = StudentProfileSaver) {
+    var savedProfile by rememberSaveable(stateSaver = StudentProfileSaver) {
+        mutableStateOf(DefaultStudentProfile)
+    }
+    var draftProfile by rememberSaveable(stateSaver = StudentProfileSaver) {
         mutableStateOf(DefaultStudentProfile)
     }
     var isEditing by rememberSaveable { mutableStateOf(false) }
 
     StudentProfileScreen(
         uiState = StudentProfileUiState(
-            profile = profile,
+            savedProfile = savedProfile,
+            draftProfile = draftProfile,
             isEditing = isEditing
         ),
-        onEditClick = { isEditing = true },
-        onDoneClick = { isEditing = false },
-        onEmailChange = { email -> profile = profile.copy(email = email) },
-        onPhoneChange = { phone -> profile = profile.copy(phone = phone) }
+        onEditClick = {
+            draftProfile = savedProfile
+            isEditing = true
+        },
+        onSaveClick = {
+            savedProfile = draftProfile
+            isEditing = false
+        },
+        onCancelClick = {
+            draftProfile = savedProfile
+            isEditing = false
+        },
+        onNameChange = { name -> draftProfile = draftProfile.copy(name = name) },
+        onStudyProgramChange = { studyProgram ->
+            draftProfile = draftProfile.copy(studyProgram = studyProgram)
+        },
+        onEmailChange = { email -> draftProfile = draftProfile.copy(email = email) },
+        onPhoneChange = { phone -> draftProfile = draftProfile.copy(phone = phone) }
     )
 }

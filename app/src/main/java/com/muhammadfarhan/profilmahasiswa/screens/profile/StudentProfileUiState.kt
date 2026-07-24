@@ -4,9 +4,14 @@ import androidx.compose.runtime.saveable.listSaver
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 
 data class StudentProfileUiState(
-    val profile: StudentProfile,
-    val isEditing: Boolean = false
-)
+    val savedProfile: StudentProfile,
+    val draftProfile: StudentProfile = savedProfile,
+    val isEditing: Boolean = false,
+    val hasChanges: Boolean = draftProfile != savedProfile
+) {
+    val displayedProfile: StudentProfile
+        get() = if (isEditing) draftProfile else savedProfile
+}
 
 val StudentProfileSaver = listSaver<StudentProfile, Any>(
     save = { profile ->
