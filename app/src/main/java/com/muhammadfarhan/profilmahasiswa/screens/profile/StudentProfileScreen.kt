@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,8 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +46,24 @@ fun StudentProfileScreen(
     onPhoneChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+    val nameFocusRequester = remember { FocusRequester() }
+    val studyProgramFocusRequester = remember { FocusRequester() }
+    val emailFocusRequester = remember { FocusRequester() }
+    val phoneFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(uiState.fieldErrors, uiState.isEditing) {
+        if (uiState.isEditing) {
+            when {
+                uiState.fieldErrors.name != null -> nameFocusRequester.requestFocus()
+                uiState.fieldErrors.studyProgram != null ->
+                    studyProgramFocusRequester.requestFocus()
+                uiState.fieldErrors.email != null -> emailFocusRequester.requestFocus()
+                uiState.fieldErrors.phone != null -> phoneFocusRequester.requestFocus()
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -69,6 +92,7 @@ fun StudentProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .imePadding()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -80,6 +104,10 @@ fun StudentProfileScreen(
                 ProfileDetailsCard(
                     profile = uiState.draftProfile,
                     fieldErrors = uiState.fieldErrors,
+                    nameFocusRequester = nameFocusRequester,
+                    studyProgramFocusRequester = studyProgramFocusRequester,
+                    onNameNext = { studyProgramFocusRequester.requestFocus() },
+                    onStudyProgramNext = { emailFocusRequester.requestFocus() },
                     onNameChange = onNameChange,
                     onStudyProgramChange = onStudyProgramChange
                 )
@@ -89,6 +117,10 @@ fun StudentProfileScreen(
                 profile = uiState.displayedProfile,
                 isEditing = uiState.isEditing,
                 fieldErrors = uiState.fieldErrors,
+                emailFocusRequester = emailFocusRequester,
+                phoneFocusRequester = phoneFocusRequester,
+                onEmailNext = { phoneFocusRequester.requestFocus() },
+                onPhoneDone = { focusManager.clearFocus() },
                 onEmailChange = onEmailChange,
                 onPhoneChange = onPhoneChange
             )
@@ -97,8 +129,14 @@ fun StudentProfileScreen(
                 isEditing = uiState.isEditing,
                 saveEnabled = uiState.canSave,
                 onEditClick = onEditClick,
-                onSaveClick = onSaveClick,
-                onCancelClick = onCancelClick
+                onSaveClick = {
+                    focusManager.clearFocus()
+                    onSaveClick()
+                },
+                onCancelClick = {
+                    focusManager.clearFocus()
+                    onCancelClick()
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
         }

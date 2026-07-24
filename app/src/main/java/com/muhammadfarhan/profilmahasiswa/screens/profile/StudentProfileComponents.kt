@@ -2,6 +2,7 @@ package com.muhammadfarhan.profilmahasiswa.screens.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,10 +33,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.muhammadfarhan.profilmahasiswa.R
@@ -150,6 +156,10 @@ fun ContactInformationCard(
     profile: StudentProfile,
     isEditing: Boolean,
     fieldErrors: ProfileFieldErrors,
+    emailFocusRequester: FocusRequester,
+    phoneFocusRequester: FocusRequester,
+    onEmailNext: () -> Unit,
+    onPhoneDone: () -> Unit,
     onEmailChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -178,6 +188,10 @@ fun ContactInformationCard(
                 requiredError = R.string.error_email_required,
                 tooLongError = null,
                 invalidFormatError = R.string.error_email_invalid,
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next,
+                focusRequester = emailFocusRequester,
+                onImeAction = onEmailNext,
                 onValueChange = onEmailChange
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -190,6 +204,10 @@ fun ContactInformationCard(
                 requiredError = R.string.error_phone_required,
                 tooLongError = null,
                 invalidFormatError = R.string.error_phone_invalid,
+                keyboardType = KeyboardType.Phone,
+                imeAction = ImeAction.Done,
+                focusRequester = phoneFocusRequester,
+                onImeAction = onPhoneDone,
                 onValueChange = onPhoneChange
             )
         }
@@ -200,6 +218,10 @@ fun ContactInformationCard(
 fun ProfileDetailsCard(
     profile: StudentProfile,
     fieldErrors: ProfileFieldErrors,
+    nameFocusRequester: FocusRequester,
+    studyProgramFocusRequester: FocusRequester,
+    onNameNext: () -> Unit,
+    onStudyProgramNext: () -> Unit,
     onNameChange: (String) -> Unit,
     onStudyProgramChange: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -227,6 +249,10 @@ fun ProfileDetailsCard(
                 requiredError = R.string.error_name_required,
                 tooLongError = R.string.error_name_too_long,
                 invalidFormatError = null,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+                focusRequester = nameFocusRequester,
+                onImeAction = onNameNext,
                 onValueChange = onNameChange
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -239,6 +265,10 @@ fun ProfileDetailsCard(
                 requiredError = R.string.error_study_program_required,
                 tooLongError = R.string.error_study_program_too_long,
                 invalidFormatError = null,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next,
+                focusRequester = studyProgramFocusRequester,
+                onImeAction = onStudyProgramNext,
                 onValueChange = onStudyProgramChange
             )
         }
@@ -255,6 +285,10 @@ fun ContactField(
     requiredError: Int,
     tooLongError: Int?,
     invalidFormatError: Int?,
+    keyboardType: KeyboardType,
+    imeAction: ImeAction,
+    focusRequester: FocusRequester,
+    onImeAction: () -> Unit,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -298,8 +332,19 @@ fun ContactField(
             supportingText = errorMessage?.let { message ->
                 { Text(text = message) }
             },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = imeAction
+            ),
+            keyboardActions = if (imeAction == ImeAction.Done) {
+                KeyboardActions(onDone = { onImeAction() })
+            } else {
+                KeyboardActions(onNext = { onImeAction() })
+            },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
         )
     }
 }
