@@ -4,11 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -55,6 +57,23 @@ fun ProfileHeader(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ProfileAvatar()
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = MaterialTheme.colorScheme.secondary
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = stringResource(R.string.active_student_status),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = profile.name,
@@ -103,9 +122,7 @@ fun ProfileAvatar(modifier: Modifier = Modifier) {
         ) {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = stringResource(
-                    R.string.content_description_active_student
-                ),
+                contentDescription = null,
                 modifier = Modifier.size(16.dp),
                 tint = MaterialTheme.colorScheme.onSecondary
             )
@@ -313,7 +330,7 @@ fun ContactField(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = label,
+                contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary
             )
         }
@@ -353,51 +370,82 @@ fun ProfileActions(
     onCancelClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (isEditing) {
-        Row(modifier = modifier.fillMaxWidth()) {
-            OutlinedButton(
-                onClick = onCancelClick,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(50.dp)
-            ) {
-                Text(text = stringResource(R.string.action_cancel))
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        if (isEditing && maxWidth < 360.dp) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onSaveClick,
+                    enabled = saveEnabled,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 48.dp)
+                ) {
+                    SaveButtonContent()
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = onCancelClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 48.dp)
+                ) {
+                    Text(text = stringResource(R.string.action_cancel))
+                }
             }
-            Spacer(modifier = Modifier.width(12.dp))
+        } else if (isEditing) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                OutlinedButton(
+                    onClick = onCancelClick,
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 48.dp)
+                ) {
+                    Text(text = stringResource(R.string.action_cancel))
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Button(
+                    onClick = onSaveClick,
+                    enabled = saveEnabled,
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 48.dp)
+                ) {
+                    SaveButtonContent()
+                }
+            }
+        } else {
             Button(
-                onClick = onSaveClick,
-                enabled = saveEnabled,
+                onClick = onEditClick,
                 modifier = Modifier
-                    .weight(1f)
-                    .height(50.dp)
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Check,
+                    imageVector = Icons.Default.Edit,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(R.string.action_save))
+                Text(
+                    text = stringResource(R.string.action_edit_profile),
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
-    } else {
-        Button(
-            onClick = onEditClick,
-            modifier = modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(R.string.action_edit_profile),
-                fontWeight = FontWeight.Medium
-            )
-        }
     }
+}
+
+@Composable
+private fun SaveButtonContent() {
+    Icon(
+        imageVector = Icons.Default.Check,
+        contentDescription = null,
+        modifier = Modifier.size(20.dp)
+    )
+    Spacer(modifier = Modifier.width(8.dp))
+    Text(
+        text = stringResource(R.string.action_save),
+        style = MaterialTheme.typography.labelLarge
+    )
 }
