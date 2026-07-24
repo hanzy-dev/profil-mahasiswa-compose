@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,7 +42,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.muhammadfarhan.profilmahasiswa.R
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 
@@ -60,8 +58,7 @@ fun ProfileHeader(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = profile.name,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.headlineSmall
         )
         Text(
             text = stringResource(R.string.student_id_format, profile.studentId),
@@ -100,8 +97,8 @@ fun ProfileAvatar(modifier: Modifier = Modifier) {
                 .align(Alignment.BottomEnd)
                 .size(28.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF4CAF50))
-                .border(2.dp, Color.White, CircleShape),
+                .background(MaterialTheme.colorScheme.secondary)
+                .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -110,7 +107,7 @@ fun ProfileAvatar(modifier: Modifier = Modifier) {
                     R.string.content_description_active_student
                 ),
                 modifier = Modifier.size(16.dp),
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.onSecondary
             )
         }
     }
@@ -175,8 +172,7 @@ fun ContactInformationCard(
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = stringResource(R.string.contact_information),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(16.dp))
             ContactField(
@@ -236,8 +232,7 @@ fun ProfileDetailsCard(
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = stringResource(R.string.profile_information),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(16.dp))
             ContactField(
