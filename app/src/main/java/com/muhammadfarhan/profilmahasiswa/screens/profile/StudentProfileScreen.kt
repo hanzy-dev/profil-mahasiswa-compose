@@ -26,8 +26,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.muhammadfarhan.profilmahasiswa.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,8 +51,13 @@ fun StudentProfileScreen(
     val phoneFocusRequester = remember { FocusRequester() }
 
     Scaffold(
-        modifier = modifier,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        modifier = modifier.testTag(ProfileTestTags.Screen),
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.testTag(ProfileTestTags.Snackbar)
+            )
+        },
         topBar = {
             TopAppBar(
                 title = {

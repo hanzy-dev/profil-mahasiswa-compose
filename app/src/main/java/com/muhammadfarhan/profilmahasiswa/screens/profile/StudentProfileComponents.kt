@@ -39,6 +39,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -193,6 +194,7 @@ fun ContactInformationCard(
             )
             Spacer(modifier = Modifier.height(16.dp))
             ContactField(
+                testTag = ProfileTestTags.Email,
                 icon = Icons.Default.Email,
                 label = stringResource(R.string.label_email),
                 value = profile.email,
@@ -209,6 +211,7 @@ fun ContactInformationCard(
             )
             Spacer(modifier = Modifier.height(12.dp))
             ContactField(
+                testTag = ProfileTestTags.Phone,
                 icon = Icons.Default.Phone,
                 label = stringResource(R.string.label_phone),
                 value = profile.phone,
@@ -253,6 +256,7 @@ fun ProfileDetailsCard(
             )
             Spacer(modifier = Modifier.height(16.dp))
             ContactField(
+                testTag = ProfileTestTags.Name,
                 icon = Icons.Default.Person,
                 label = stringResource(R.string.label_name),
                 value = profile.name,
@@ -269,6 +273,7 @@ fun ProfileDetailsCard(
             )
             Spacer(modifier = Modifier.height(12.dp))
             ContactField(
+                testTag = ProfileTestTags.StudyProgram,
                 icon = Icons.Default.School,
                 label = stringResource(R.string.label_study_program),
                 value = profile.studyProgram,
@@ -289,6 +294,7 @@ fun ProfileDetailsCard(
 
 @Composable
 fun ContactField(
+    testTag: String,
     icon: ImageVector,
     label: String,
     value: String,
@@ -356,6 +362,7 @@ fun ContactField(
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
+                .testTag(testTag)
                 .focusRequester(focusRequester)
         )
     }
@@ -378,6 +385,7 @@ fun ProfileActions(
                     enabled = saveEnabled,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .testTag(ProfileTestTags.Save)
                         .heightIn(min = 48.dp)
                 ) {
                     SaveButtonContent()
@@ -387,6 +395,7 @@ fun ProfileActions(
                     onClick = onCancelClick,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .testTag(ProfileTestTags.Cancel)
                         .heightIn(min = 48.dp)
                 ) {
                     Text(text = stringResource(R.string.action_cancel))
@@ -398,6 +407,7 @@ fun ProfileActions(
                     onClick = onCancelClick,
                     modifier = Modifier
                         .weight(1f)
+                        .testTag(ProfileTestTags.Cancel)
                         .heightIn(min = 48.dp)
                 ) {
                     Text(text = stringResource(R.string.action_cancel))
@@ -408,6 +418,7 @@ fun ProfileActions(
                     enabled = saveEnabled,
                     modifier = Modifier
                         .weight(1f)
+                        .testTag(ProfileTestTags.Save)
                         .heightIn(min = 48.dp)
                 ) {
                     SaveButtonContent()
@@ -418,6 +429,7 @@ fun ProfileActions(
                 onClick = onEditClick,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag(ProfileTestTags.Edit)
                     .heightIn(min = 48.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
