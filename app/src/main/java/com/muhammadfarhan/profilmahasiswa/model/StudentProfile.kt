@@ -1,4 +1,4 @@
-package com.example.profilmahasiswa.model
+package com.muhammadfarhan.profilmahasiswa.model
 
 data class StudentProfile(
     val name: String,

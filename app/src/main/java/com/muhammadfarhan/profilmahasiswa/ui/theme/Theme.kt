@@ -1,4 +1,4 @@
-package com.example.profilmahasiswa.ui.theme
+package com.muhammadfarhan.profilmahasiswa.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

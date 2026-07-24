@@ -1,4 +1,4 @@
-package com.example.profilmahasiswa.screens.profile
+package com.muhammadfarhan.profilmahasiswa.screens.profile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,9 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.profilmahasiswa.R
-import com.example.profilmahasiswa.model.DefaultStudentProfile
-import com.example.profilmahasiswa.ui.theme.ProfilMahasiswaTheme
+import com.muhammadfarhan.profilmahasiswa.R
+import com.muhammadfarhan.profilmahasiswa.model.DefaultStudentProfile
+import com.muhammadfarhan.profilmahasiswa.ui.theme.ProfilMahasiswaTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -1,7 +1,7 @@
-package com.example.profilmahasiswa.screens.profile
+package com.muhammadfarhan.profilmahasiswa.screens.profile
 
 import androidx.compose.runtime.saveable.listSaver
-import com.example.profilmahasiswa.model.StudentProfile
+import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 
 data class StudentProfileUiState(
     val profile: StudentProfile,

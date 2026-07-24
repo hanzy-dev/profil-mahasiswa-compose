@@ -1,4 +1,4 @@
-package com.example.profilmahasiswa.screens.profile
+package com.muhammadfarhan.profilmahasiswa.screens.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,8 +37,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.profilmahasiswa.R
-import com.example.profilmahasiswa.model.StudentProfile
+import com.muhammadfarhan.profilmahasiswa.R
+import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 
 @Composable
 fun ProfileHeader(

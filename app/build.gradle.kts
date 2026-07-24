@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.profilmahasiswa"
+    namespace = "com.muhammadfarhan.profilmahasiswa"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.profilmahasiswa"
+        applicationId = "com.muhammadfarhan.profilmahasiswa"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
