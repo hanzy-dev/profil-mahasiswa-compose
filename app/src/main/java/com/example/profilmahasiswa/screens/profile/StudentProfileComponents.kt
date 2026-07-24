@@ -33,9 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.profilmahasiswa.R
 import com.example.profilmahasiswa.model.StudentProfile
 
 @Composable
@@ -55,7 +57,7 @@ fun ProfileHeader(
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "NIM: ${profile.studentId}",
+            text = stringResource(R.string.student_id_format, profile.studentId),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -79,7 +81,9 @@ fun ProfileAvatar(modifier: Modifier = Modifier) {
         ) {
             Icon(
                 imageVector = Icons.Default.Person,
-                contentDescription = "Foto profil",
+                contentDescription = stringResource(
+                    R.string.content_description_profile_photo
+                ),
                 modifier = Modifier.size(60.dp),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
@@ -95,7 +99,9 @@ fun ProfileAvatar(modifier: Modifier = Modifier) {
         ) {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = "Mahasiswa aktif",
+                contentDescription = stringResource(
+                    R.string.content_description_active_student
+                ),
                 modifier = Modifier.size(16.dp),
                 tint = Color.White
             )
@@ -119,13 +125,19 @@ fun AcademicInfo(
     ) {
         Icon(
             imageVector = Icons.Default.School,
-            contentDescription = "Program studi",
+            contentDescription = stringResource(
+                R.string.content_description_study_program
+            ),
             modifier = Modifier.size(20.dp),
             tint = MaterialTheme.colorScheme.onSecondaryContainer
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = "${profile.studyProgram} • Semester ${profile.semester}",
+            text = stringResource(
+                R.string.academic_info_format,
+                profile.studyProgram,
+                profile.semester
+            ),
             color = MaterialTheme.colorScheme.onSecondaryContainer,
             fontWeight = FontWeight.Medium
         )
@@ -150,14 +162,14 @@ fun ContactInformationCard(
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
-                text = "Informasi Kontak",
+                text = stringResource(R.string.contact_information),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(16.dp))
             ContactField(
                 icon = Icons.Default.Email,
-                label = "Email",
+                label = stringResource(R.string.label_email),
                 value = profile.email,
                 enabled = isEditing,
                 onValueChange = onEmailChange
@@ -165,7 +177,7 @@ fun ContactInformationCard(
             Spacer(modifier = Modifier.height(12.dp))
             ContactField(
                 icon = Icons.Default.Phone,
-                label = "Telepon",
+                label = stringResource(R.string.label_phone),
                 value = profile.phone,
                 enabled = isEditing,
                 onValueChange = onPhoneChange
@@ -238,7 +250,13 @@ fun ProfileActionButton(
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = if (isEditing) "Selesai" else "Edit Profil",
+            text = stringResource(
+                if (isEditing) {
+                    R.string.action_done
+                } else {
+                    R.string.action_edit_profile
+                }
+            ),
             fontWeight = FontWeight.Medium
         )
     }

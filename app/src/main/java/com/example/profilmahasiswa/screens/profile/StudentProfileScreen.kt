@@ -16,10 +16,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.profilmahasiswa.R
 import com.example.profilmahasiswa.model.DefaultStudentProfile
 import com.example.profilmahasiswa.ui.theme.ProfilMahasiswaTheme
 
@@ -39,7 +41,13 @@ fun StudentProfileScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = if (uiState.isEditing) "Edit Profil" else "Profil Mahasiswa",
+                        text = stringResource(
+                            if (uiState.isEditing) {
+                                R.string.title_edit_profile
+                            } else {
+                                R.string.title_profile
+                            }
+                        ),
                         fontWeight = FontWeight.Bold
                     )
                 },

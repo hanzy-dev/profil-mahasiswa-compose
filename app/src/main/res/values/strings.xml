@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Profil Mahasiswa</string>
+    <string name="title_profile">Profil Mahasiswa</string>
+    <string name="title_edit_profile">Edit Profil</string>
+    <string name="action_edit_profile">Edit Profil</string>
+    <string name="action_done">Selesai</string>
+    <string name="contact_information">Informasi Kontak</string>
+    <string name="label_email">Email</string>
+    <string name="label_phone">Telepon</string>
+    <string name="student_id_format">NIM: %1$s</string>
+    <string name="academic_info_format">%1$s • Semester %2$d</string>
+    <string name="content_description_study_program">Program studi</string>
+    <string name="content_description_profile_photo">Foto profil</string>
+    <string name="content_description_active_student">Mahasiswa aktif</string>
+</resources>
