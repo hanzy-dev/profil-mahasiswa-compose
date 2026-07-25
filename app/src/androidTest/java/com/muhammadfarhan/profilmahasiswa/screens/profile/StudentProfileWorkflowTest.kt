@@ -3,6 +3,7 @@ package com.muhammadfarhan.profilmahasiswa.screens.profile
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -12,7 +13,9 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.semantics.SemanticsProperties
 import com.muhammadfarhan.profilmahasiswa.MainActivity
+import com.muhammadfarhan.profilmahasiswa.screens.home.StudentListTestTags
 import org.junit.Rule
 import org.junit.Test
 
@@ -23,6 +26,7 @@ class StudentProfileWorkflowTest {
 
     @Test
     fun profileContentIsDisplayed() {
+        openPrimaryStudentProfile()
         composeRule.onNodeWithTag(ProfileTestTags.Screen).assertExists()
         composeRule.onNodeWithText("Muhammad Farhan").assertIsDisplayed()
         composeRule.onNodeWithText("NIM: 23083000060").assertExists()
@@ -56,7 +60,11 @@ class StudentProfileWorkflowTest {
 
     @Test
     fun cancelDiscardsDraftChanges() {
-        enterEditMode()
+        openPrimaryStudentProfile()
+        val originalName = displayedProfileName()
+        composeRule.onNodeWithTag(ProfileTestTags.Edit)
+            .performScrollTo()
+            .performClick()
 
         composeRule.onNodeWithTag(ProfileTestTags.Name)
             .performTextReplacement("Nama Sementara")
@@ -64,24 +72,38 @@ class StudentProfileWorkflowTest {
             .performScrollTo()
             .performClick()
 
-        composeRule.onNodeWithText("Muhammad Farhan").assertIsDisplayed()
+        composeRule.onNodeWithTag(ProfileTestTags.DisplayedName)
+            .assertTextEquals(originalName)
         composeRule.onNodeWithText("Nama Sementara").assertDoesNotExist()
         composeRule.onNodeWithTag(ProfileTestTags.Edit).assertExists()
     }
 
     @Test
     fun validChangesCanBeSavedAndConfirmed() {
-        enterEditMode()
+        openPrimaryStudentProfile()
+        val updatedName = if (displayedProfileName() == "Muhammad Farhan Workflow") {
+            "Muhammad Farhan Verified"
+        } else {
+            "Muhammad Farhan Workflow"
+        }
+        composeRule.onNodeWithTag(ProfileTestTags.Edit)
+            .performScrollTo()
+            .performClick()
 
         composeRule.onNodeWithTag(ProfileTestTags.Name)
-            .performTextReplacement("Muhammad Farhan A")
+            .performTextReplacement(updatedName)
         composeRule.onNodeWithTag(ProfileTestTags.Save)
             .performScrollTo()
             .assertIsEnabled()
             .performClick()
 
-        composeRule.onNodeWithText("Muhammad Farhan A").assertIsDisplayed()
-        composeRule.onNodeWithText("Profil berhasil diperbarui").assertExists()
+        composeRule.onNodeWithTag(ProfileTestTags.DisplayedName)
+            .assertTextEquals(updatedName)
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.onAllNodes(hasText("Profil berhasil diperbarui"))
+                .fetchSemanticsNodes()
+                .size == 1
+        }
         composeRule.onNodeWithTag(ProfileTestTags.Edit).assertExists()
     }
 
@@ -100,8 +122,22 @@ class StudentProfileWorkflowTest {
     }
 
     private fun enterEditMode() {
+        openPrimaryStudentProfile()
         composeRule.onNodeWithTag(ProfileTestTags.Edit)
             .performScrollTo()
             .performClick()
+    }
+
+    private fun openPrimaryStudentProfile() {
+        if (composeRule.onAllNodes(hasText("Daftar Mahasiswa")).fetchSemanticsNodes().isNotEmpty()) {
+            composeRule.onNodeWithTag(StudentListTestTags.PrimaryStudentCard).performClick()
+        }
+    }
+
+    private fun displayedProfileName(): String {
+        return composeRule.onNodeWithTag(ProfileTestTags.DisplayedName)
+            .fetchSemanticsNode()
+            .config[SemanticsProperties.Text]
+            .joinToString(separator = "") { it.text }
     }
 }
