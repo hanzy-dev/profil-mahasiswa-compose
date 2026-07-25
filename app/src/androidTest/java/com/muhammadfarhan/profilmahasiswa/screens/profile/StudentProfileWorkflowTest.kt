@@ -3,6 +3,8 @@ package com.muhammadfarhan.profilmahasiswa.screens.profile
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -88,10 +90,13 @@ class StudentProfileWorkflowTest {
         enterEditMode()
 
         composeRule.onNodeWithText("NIM: 23083000060").assertExists()
-        composeRule.onNodeWithText("S1 Sistem Informasi", substring = true).assertExists()
-        composeRule.onNodeWithText("Semester 6", substring = true).assertExists()
-        composeRule.onNodeWithTag("profile_student_id").assertDoesNotExist()
-        composeRule.onNodeWithTag("profile_semester").assertDoesNotExist()
+        composeRule.onNodeWithText("S1 Sistem Informasi • Semester 6").assertExists()
+        composeRule.onNode(
+            hasText("NIM: 23083000060") and hasSetTextAction()
+        ).assertDoesNotExist()
+        composeRule.onNode(
+            hasText("S1 Sistem Informasi • Semester 6") and hasSetTextAction()
+        ).assertDoesNotExist()
     }
 
     private fun enterEditMode() {
