@@ -59,13 +59,13 @@ private fun validateRequiredText(
     else -> null
 }
 
-private fun validateEmail(email: String): ProfileFieldError? = when {
+fun validateEmail(email: String): ProfileFieldError? = when {
     email.isBlank() -> ProfileFieldError.Required
     !emailPattern.matches(email) -> ProfileFieldError.InvalidFormat
     else -> null
 }
 
-private fun validatePhone(phone: String): ProfileFieldError? {
+fun validatePhone(phone: String): ProfileFieldError? {
     if (phone.isBlank()) return ProfileFieldError.Required
     if (!phoneCharacters.matches(phone)) return ProfileFieldError.InvalidFormat
     if (maskedPhonePattern.matches(phone)) return null

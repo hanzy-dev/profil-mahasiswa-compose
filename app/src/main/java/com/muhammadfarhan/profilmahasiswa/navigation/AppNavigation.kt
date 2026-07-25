@@ -5,6 +5,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.ui.res.stringResource
+import com.muhammadfarhan.profilmahasiswa.R
+import com.muhammadfarhan.profilmahasiswa.screens.add.AddStudentRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,17 +18,22 @@ import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 import com.muhammadfarhan.profilmahasiswa.screens.common.StudentNotFoundScreen
 import com.muhammadfarhan.profilmahasiswa.screens.home.StudentListScreen
 import com.muhammadfarhan.profilmahasiswa.screens.profile.StudentProfileRoute
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineStart
 
 @Composable
 fun AppNavigation(
     students: List<StudentProfile>,
     onProfileSaved: (StudentProfile) -> Unit,
+    onStudentCreated: (StudentProfile) -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = AppRoutes.STUDENTS,
     navController: NavHostController = rememberNavController()
 ) {
-    val profileSnackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
     val navigationScope = rememberCoroutineScope()
+    val studentAddedMessage = stringResource(R.string.student_added_success)
+    val profileUpdatedMessage = stringResource(R.string.profile_update_success)
     val returnToStudents = {
         if (!navController.popBackStack()) {
             navController.navigate(AppRoutes.STUDENTS) {
@@ -43,9 +51,24 @@ fun AppNavigation(
         composable(AppRoutes.STUDENTS) {
             StudentListScreen(
                 students = students,
+                snackbarHostState = snackbarHostState,
+                onAddStudent = { navController.navigate(AppRoutes.ADD_STUDENT) },
                 onStudentClick = { studentId ->
                     navController.navigate(AppRoutes.studentDetail(studentId))
                 }
+            )
+        }
+        composable(AppRoutes.ADD_STUDENT) {
+            AddStudentRoute(
+                existingStudentIds = students.mapTo(mutableSetOf(), StudentProfile::studentId),
+                onStudentCreated = { profile ->
+                    onStudentCreated(profile)
+                    navController.popBackStack()
+                    navigationScope.launch {
+                        snackbarHostState.showSnackbar(studentAddedMessage)
+                    }
+                },
+                onBack = returnToStudents
             )
         }
         composable(
@@ -63,8 +86,12 @@ fun AppNavigation(
                     profile = student,
                     onProfileSaved = onProfileSaved,
                     onBack = returnToStudents,
-                    snackbarHostState = profileSnackbarHostState,
-                    snackbarCoroutineScope = navigationScope
+                    snackbarHostState = snackbarHostState,
+                    onProfileSaveSuccess = {
+                        navigationScope.launch(start = CoroutineStart.UNDISPATCHED) {
+                            snackbarHostState.showSnackbar(profileUpdatedMessage)
+                        }
+                    }
                 )
             }
         }

@@ -47,12 +47,7 @@ fun StudentProfileScreen(
 
     Scaffold(
         modifier = modifier.testTag(ProfileTestTags.Screen),
-        snackbarHost = {
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.testTag(ProfileTestTags.Snackbar)
-            )
-        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             AppTopBar(
                 title = stringResource(

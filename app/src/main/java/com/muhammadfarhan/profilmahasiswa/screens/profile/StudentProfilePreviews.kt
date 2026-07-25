@@ -1,7 +1,7 @@
 package com.muhammadfarhan.profilmahasiswa.screens.profile
 
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.tooling.preview.Preview
 import com.muhammadfarhan.profilmahasiswa.model.DefaultStudentProfile
 import com.muhammadfarhan.profilmahasiswa.ui.theme.ProfilMahasiswaTheme

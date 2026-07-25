@@ -6,12 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Modifier
-import com.muhammadfarhan.profilmahasiswa.R
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun StudentProfileRoute(
@@ -19,7 +15,7 @@ fun StudentProfileRoute(
     onProfileSaved: (StudentProfile) -> Unit,
     onBack: () -> Unit,
     snackbarHostState: SnackbarHostState,
-    snackbarCoroutineScope: CoroutineScope,
+    onProfileSaveSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var draftProfile by rememberSaveable(profile.studentId, stateSaver = StudentProfileSaver) {
@@ -29,8 +25,6 @@ fun StudentProfileRoute(
     var fieldErrors by rememberSaveable(profile.studentId, stateSaver = ProfileFieldErrorsSaver) {
         mutableStateOf(ProfileFieldErrors())
     }
-    val successMessage = stringResource(R.string.profile_update_success)
-
     fun updateDraft(updatedProfile: StudentProfile) {
         draftProfile = updatedProfile
         fieldErrors = validateStudentProfile(updatedProfile)
@@ -58,9 +52,7 @@ fun StudentProfileRoute(
 
             if (!validationErrors.hasErrors) {
                 isEditing = false
-                snackbarCoroutineScope.launch {
-                    snackbarHostState.showSnackbar(successMessage)
-                }
+                onProfileSaveSuccess()
                 onProfileSaved(normalizedDraft)
             }
         },
