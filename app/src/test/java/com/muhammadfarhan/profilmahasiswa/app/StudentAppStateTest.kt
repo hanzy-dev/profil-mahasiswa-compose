@@ -78,4 +78,34 @@ class StudentAppStateTest {
             assertEquals(mode, restoreStudentAppState(saveStudentAppState(state)).themeMode)
         }
     }
+
+    @Test
+    fun addStudentAppendsUniqueProfile() {
+        assertEquals(
+            listOf(DefaultStudentProfile, secondStudent),
+            DefaultStudentAppState.addStudent(secondStudent).students
+        )
+    }
+
+    @Test
+    fun addStudentPreservesExistingOrder() {
+        val third = secondStudent.copy(name = "Third", studentId = "TEST-3")
+        val state = StudentAppState(listOf(DefaultStudentProfile, secondStudent))
+        assertEquals(
+            listOf(DefaultStudentProfile.studentId, secondStudent.studentId, third.studentId),
+            state.addStudent(third).students.map(StudentProfile::studentId)
+        )
+    }
+
+    @Test
+    fun duplicateAddDoesNotAlterState() {
+        val duplicate = DefaultStudentProfile.copy(name = "Duplicate", studentId = " 23083000060 ")
+        assertSame(DefaultStudentAppState, DefaultStudentAppState.addStudent(duplicate))
+    }
+
+    @Test
+    fun addedStudentSurvivesSaverRoundTrip() {
+        val added = DefaultStudentAppState.addStudent(secondStudent)
+        assertEquals(added, restoreStudentAppState(saveStudentAppState(added)))
+    }
 }

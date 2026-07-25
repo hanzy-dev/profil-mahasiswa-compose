@@ -14,7 +14,22 @@ val DefaultStudentAppState = StudentAppState(
 )
 
 fun StudentAppState.findStudent(studentId: String): StudentProfile? =
-    students.find { it.studentId == studentId }
+    students.find { it.studentId.trim() == studentId.trim() }
+
+fun StudentAppState.containsStudent(studentId: String): Boolean {
+    val normalizedId = studentId.trim()
+    return normalizedId.isNotEmpty() &&
+        students.any { it.studentId.trim() == normalizedId }
+}
+
+fun StudentAppState.addStudent(profile: StudentProfile): StudentAppState {
+    val normalizedId = profile.studentId.trim()
+    if (normalizedId.isEmpty() || containsStudent(normalizedId)) return this
+    if (profile.name.isBlank() || profile.studyProgram.isBlank() ||
+        profile.semester !in 1..14 || profile.email.isBlank() || profile.phone.isBlank()
+    ) return this
+    return copy(students = students + profile.copy(studentId = normalizedId))
+}
 
 fun StudentAppState.updateStudent(profile: StudentProfile): StudentAppState {
     if (students.none { it.studentId == profile.studentId }) return this
