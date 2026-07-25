@@ -359,7 +359,8 @@ fun ContactField(
             } else {
                 KeyboardActions(onNext = { onImeAction() })
             },
-            singleLine = true,
+            singleLine = enabled,
+            maxLines = if (enabled) 1 else 2,
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag(testTag)
