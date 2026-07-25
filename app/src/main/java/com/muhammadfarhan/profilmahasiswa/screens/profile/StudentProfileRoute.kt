@@ -2,32 +2,33 @@ package com.muhammadfarhan.profilmahasiswa.screens.profile
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.Modifier
 import com.muhammadfarhan.profilmahasiswa.R
-import com.muhammadfarhan.profilmahasiswa.model.DefaultStudentProfile
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun StudentProfileRoute() {
-    var savedProfile by rememberSaveable(stateSaver = StudentProfileSaver) {
-        mutableStateOf(DefaultStudentProfile)
+fun StudentProfileRoute(
+    profile: StudentProfile,
+    onProfileSaved: (StudentProfile) -> Unit,
+    onBack: () -> Unit,
+    snackbarHostState: SnackbarHostState,
+    snackbarCoroutineScope: CoroutineScope,
+    modifier: Modifier = Modifier
+) {
+    var draftProfile by rememberSaveable(profile.studentId, stateSaver = StudentProfileSaver) {
+        mutableStateOf(profile)
     }
-    var draftProfile by rememberSaveable(stateSaver = StudentProfileSaver) {
-        mutableStateOf(DefaultStudentProfile)
-    }
-    var isEditing by rememberSaveable { mutableStateOf(false) }
-    var fieldErrors by rememberSaveable(stateSaver = ProfileFieldErrorsSaver) {
+    var isEditing by rememberSaveable(profile.studentId) { mutableStateOf(false) }
+    var fieldErrors by rememberSaveable(profile.studentId, stateSaver = ProfileFieldErrorsSaver) {
         mutableStateOf(ProfileFieldErrors())
     }
-    val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
     val successMessage = stringResource(R.string.profile_update_success)
 
     fun updateDraft(updatedProfile: StudentProfile) {
@@ -37,14 +38,15 @@ fun StudentProfileRoute() {
 
     StudentProfileScreen(
         uiState = StudentProfileUiState(
-            savedProfile = savedProfile,
+            savedProfile = profile,
             draftProfile = draftProfile,
             isEditing = isEditing,
             fieldErrors = fieldErrors
         ),
         snackbarHostState = snackbarHostState,
+        onBack = onBack,
         onEditClick = {
-            draftProfile = savedProfile
+            draftProfile = profile
             fieldErrors = ProfileFieldErrors()
             isEditing = true
         },
@@ -55,15 +57,15 @@ fun StudentProfileRoute() {
             fieldErrors = validationErrors
 
             if (!validationErrors.hasErrors) {
-                savedProfile = normalizedDraft
                 isEditing = false
-                coroutineScope.launch {
+                snackbarCoroutineScope.launch {
                     snackbarHostState.showSnackbar(successMessage)
                 }
+                onProfileSaved(normalizedDraft)
             }
         },
         onCancelClick = {
-            draftProfile = savedProfile
+            draftProfile = profile
             fieldErrors = ProfileFieldErrors()
             isEditing = false
         },
@@ -72,6 +74,7 @@ fun StudentProfileRoute() {
             updateDraft(draftProfile.copy(studyProgram = studyProgram))
         },
         onEmailChange = { email -> updateDraft(draftProfile.copy(email = email)) },
-        onPhoneChange = { phone -> updateDraft(draftProfile.copy(phone = phone)) }
+        onPhoneChange = { phone -> updateDraft(draftProfile.copy(phone = phone)) },
+        modifier = modifier
     )
 }

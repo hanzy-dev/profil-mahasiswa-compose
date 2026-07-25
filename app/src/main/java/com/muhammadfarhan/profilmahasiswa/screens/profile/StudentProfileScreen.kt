@@ -10,14 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,12 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.muhammadfarhan.profilmahasiswa.R
+import com.muhammadfarhan.profilmahasiswa.ui.components.AppTopBar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentProfileScreen(
     uiState: StudentProfileUiState,
@@ -42,6 +36,7 @@ fun StudentProfileScreen(
     onStudyProgramChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -59,23 +54,13 @@ fun StudentProfileScreen(
             )
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(
-                            if (uiState.isEditing) {
-                                R.string.title_edit_profile
-                            } else {
-                                R.string.title_profile
-                            }
-                        ),
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+            AppTopBar(
+                title = stringResource(
+                    if (uiState.isEditing) R.string.title_edit_profile
+                    else R.string.title_profile
+                ),
+                onBack = onBack,
+                backButtonModifier = Modifier.testTag(ProfileTestTags.Back)
             )
         }
     ) { innerPadding ->

@@ -78,6 +78,7 @@ fun ProfileHeader(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = profile.name,
+            modifier = Modifier.testTag(ProfileTestTags.DisplayedName),
             style = MaterialTheme.typography.headlineSmall
         )
         Text(

@@ -40,7 +40,8 @@ private fun PreviewProfileScreen(uiState: StudentProfileUiState) {
         onNameChange = {},
         onStudyProgramChange = {},
         onEmailChange = {},
-        onPhoneChange = {}
+        onPhoneChange = {},
+        onBack = {}
     )
 }
 
