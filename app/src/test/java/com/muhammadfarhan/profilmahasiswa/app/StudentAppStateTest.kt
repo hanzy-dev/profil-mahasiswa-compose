@@ -108,4 +108,39 @@ class StudentAppStateTest {
         val added = DefaultStudentAppState.addStudent(secondStudent)
         assertEquals(added, restoreStudentAppState(saveStudentAppState(added)))
     }
+
+    @Test
+    fun updateThemeModePreservesAllStudents() {
+        val state = StudentAppState(listOf(DefaultStudentProfile, secondStudent))
+        val updated = state.updateThemeMode(ThemeMode.DARK)
+        assertEquals(state.students, updated.students)
+    }
+
+    @Test
+    fun updateThemeModeChangesOnlyThemeMode() {
+        val state = DefaultStudentAppState
+        val updated = state.updateThemeMode(ThemeMode.DARK)
+        assertEquals(ThemeMode.DARK, updated.themeMode)
+        assertEquals(state.students, updated.students)
+    }
+
+    @Test
+    fun studentAppStateSaverRestoresLight() {
+        val state = DefaultStudentAppState.copy(themeMode = ThemeMode.LIGHT)
+        assertEquals(ThemeMode.LIGHT, restoreStudentAppState(saveStudentAppState(state)).themeMode)
+    }
+
+    @Test
+    fun studentAppStateSaverRestoresDark() {
+        val state = DefaultStudentAppState.copy(themeMode = ThemeMode.DARK)
+        assertEquals(ThemeMode.DARK, restoreStudentAppState(saveStudentAppState(state)).themeMode)
+    }
+
+    @Test
+    fun malformedSavedThemeModeFallsBackSafely() {
+        val malformedValues = listOf("INVALID_THEME", "0")
+        val restored = restoreStudentAppState(malformedValues)
+        assertEquals(ThemeMode.SYSTEM, restored.themeMode)
+        assertEquals(DefaultStudentAppState.students, restored.students)
+    }
 }
