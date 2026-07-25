@@ -16,7 +16,7 @@ private val completedForm = AddStudentForm(
 @Composable
 private fun AddPreview(state: AddStudentUiState, dark: Boolean = false) {
     ProfilMahasiswaTheme(darkTheme = dark) {
-        AddStudentScreen(state, {}, {}, {}, {})
+        AddStudentScreen(state, isDarkTheme = dark, onToggleTheme = {}, {}, {}, {}, {})
     }
 }
 

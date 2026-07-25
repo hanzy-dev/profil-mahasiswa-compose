@@ -37,10 +37,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.muhammadfarhan.profilmahasiswa.R
 import com.muhammadfarhan.profilmahasiswa.ui.components.AppTopBar
+import com.muhammadfarhan.profilmahasiswa.ui.components.ThemeToggleButton
 
 @Composable
 fun AddStudentScreen(
     uiState: AddStudentUiState,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
     onFormChange: (AddStudentForm) -> Unit,
     onSave: () -> Unit,
     onCancel: () -> Unit,
@@ -56,7 +59,8 @@ fun AddStudentScreen(
         topBar = {
             AppTopBar(
                 title = stringResource(R.string.title_add_student),
-                onBack = onBack
+                onBack = onBack,
+                actions = { ThemeToggleButton(isDarkTheme, onToggleTheme) }
             )
         }
     ) { innerPadding ->

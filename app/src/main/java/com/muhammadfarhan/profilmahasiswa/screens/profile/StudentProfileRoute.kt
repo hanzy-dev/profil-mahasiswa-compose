@@ -12,6 +12,8 @@ import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 @Composable
 fun StudentProfileRoute(
     profile: StudentProfile,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
     onProfileSaved: (StudentProfile) -> Unit,
     onBack: () -> Unit,
     snackbarHostState: SnackbarHostState,
@@ -37,6 +39,8 @@ fun StudentProfileRoute(
             isEditing = isEditing,
             fieldErrors = fieldErrors
         ),
+        isDarkTheme = isDarkTheme,
+        onToggleTheme = onToggleTheme,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
         onEditClick = {

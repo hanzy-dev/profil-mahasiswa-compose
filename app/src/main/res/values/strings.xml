@@ -52,4 +52,8 @@
     <string name="student_label">Mahasiswa</string>
     <string name="student_list_empty_title">Belum ada mahasiswa</string>
     <string name="student_list_empty_message">Tambahkan mahasiswa untuk mulai mengisi daftar.</string>
+    <string name="action_enable_dark_theme">Aktifkan tema gelap</string>
+    <string name="action_enable_light_theme">Aktifkan tema terang</string>
+    <string name="state_dark_theme_active">Tema gelap aktif</string>
+    <string name="state_light_theme_active">Tema terang aktif</string>
 </resources>

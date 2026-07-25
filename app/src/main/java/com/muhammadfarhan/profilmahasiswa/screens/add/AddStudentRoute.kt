@@ -11,6 +11,8 @@ import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 @Composable
 fun AddStudentRoute(
     existingStudentIds: Set<String>,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
     onStudentCreated: (StudentProfile) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -29,6 +31,8 @@ fun AddStudentRoute(
             errors = errors,
             canSave = !currentErrors.hasErrors
         ),
+        isDarkTheme = isDarkTheme,
+        onToggleTheme = onToggleTheme,
         onFormChange = {
             form = it
             errors = validateAddStudentForm(it, existingStudentIds)

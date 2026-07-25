@@ -30,9 +30,11 @@ private val errorPreviewState = StudentProfileUiState(
 )
 
 @Composable
-private fun PreviewProfileScreen(uiState: StudentProfileUiState) {
+private fun PreviewProfileScreen(uiState: StudentProfileUiState, darkTheme: Boolean = false) {
     StudentProfileScreen(
         uiState = uiState,
+        isDarkTheme = darkTheme,
+        onToggleTheme = {},
         snackbarHostState = SnackbarHostState(),
         onEditClick = {},
         onSaveClick = {},
@@ -49,7 +51,7 @@ private fun PreviewProfileScreen(uiState: StudentProfileUiState) {
 @Composable
 private fun ProfileLightPreview() {
     ProfilMahasiswaTheme(darkTheme = false) {
-        PreviewProfileScreen(viewPreviewState)
+        PreviewProfileScreen(viewPreviewState, darkTheme = false)
     }
 }
 
@@ -57,7 +59,7 @@ private fun ProfileLightPreview() {
 @Composable
 private fun ProfileDarkPreview() {
     ProfilMahasiswaTheme(darkTheme = true) {
-        PreviewProfileScreen(viewPreviewState)
+        PreviewProfileScreen(viewPreviewState, darkTheme = true)
     }
 }
 

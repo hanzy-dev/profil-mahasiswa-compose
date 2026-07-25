@@ -19,7 +19,7 @@ private fun StudentListLightPreview() {
 @Composable
 private fun StudentListDarkPreview() {
     ProfilMahasiswaTheme(darkTheme = true) {
-        PreviewList(previewStudents)
+        PreviewList(previewStudents, darkTheme = true)
     }
 }
 
@@ -36,9 +36,11 @@ private fun StudentListEmptyPreview() {
 }
 
 @Composable
-private fun PreviewList(students: List<StudentProfile>) {
+private fun PreviewList(students: List<StudentProfile>, darkTheme: Boolean = false) {
     StudentListScreen(
         students = students,
+        isDarkTheme = darkTheme,
+        onToggleTheme = {},
         snackbarHostState = SnackbarHostState(),
         onStudentClick = {},
         onAddStudent = {}

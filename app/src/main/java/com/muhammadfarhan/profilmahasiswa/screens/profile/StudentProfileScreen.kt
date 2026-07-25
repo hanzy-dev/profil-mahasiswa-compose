@@ -24,10 +24,13 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.muhammadfarhan.profilmahasiswa.R
 import com.muhammadfarhan.profilmahasiswa.ui.components.AppTopBar
+import com.muhammadfarhan.profilmahasiswa.ui.components.ThemeToggleButton
 
 @Composable
 fun StudentProfileScreen(
     uiState: StudentProfileUiState,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
     snackbarHostState: SnackbarHostState,
     onEditClick: () -> Unit,
     onSaveClick: () -> Unit,
@@ -55,7 +58,8 @@ fun StudentProfileScreen(
                     else R.string.title_profile
                 ),
                 onBack = onBack,
-                backButtonModifier = Modifier.testTag(ProfileTestTags.Back)
+                backButtonModifier = Modifier.testTag(ProfileTestTags.Back),
+                actions = { ThemeToggleButton(isDarkTheme, onToggleTheme) }
             )
         }
     ) { innerPadding ->

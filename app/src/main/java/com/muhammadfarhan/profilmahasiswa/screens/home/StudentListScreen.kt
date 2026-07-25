@@ -42,10 +42,13 @@ import com.muhammadfarhan.profilmahasiswa.R
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 import com.muhammadfarhan.profilmahasiswa.model.DefaultStudentProfile
 import com.muhammadfarhan.profilmahasiswa.ui.components.AppTopBar
+import com.muhammadfarhan.profilmahasiswa.ui.components.ThemeToggleButton
 
 @Composable
 fun StudentListScreen(
     students: List<StudentProfile>,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
     snackbarHostState: SnackbarHostState,
     onStudentClick: (String) -> Unit,
     onAddStudent: () -> Unit,
@@ -53,7 +56,12 @@ fun StudentListScreen(
 ) {
     Scaffold(
         modifier = modifier.testTag(StudentListTestTags.Screen),
-        topBar = { AppTopBar(title = stringResource(R.string.title_student_list)) },
+        topBar = {
+            AppTopBar(
+                title = stringResource(R.string.title_student_list),
+                actions = { ThemeToggleButton(isDarkTheme, onToggleTheme) }
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
