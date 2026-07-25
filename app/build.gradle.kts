@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
 
     // Jetpack Compose BOM (Bill of Materials)
     // BOM memastikan semua library Compose menggunakan versi yang kompatibel
