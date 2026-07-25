@@ -14,15 +14,16 @@ fun ProfilMahasiswaApp() {
     var appState by rememberSaveable(stateSaver = StudentAppStateSaver) {
         mutableStateOf(DefaultStudentAppState)
     }
-    val darkTheme = when (appState.themeMode) {
-        ThemeMode.SYSTEM -> isSystemInDarkTheme()
-        ThemeMode.LIGHT -> false
-        ThemeMode.DARK -> true
-    }
+    val systemDarkTheme = isSystemInDarkTheme()
+    val isDarkTheme = resolveDarkTheme(appState.themeMode, systemDarkTheme)
 
-    ProfilMahasiswaTheme(darkTheme = darkTheme) {
+    ProfilMahasiswaTheme(darkTheme = isDarkTheme) {
         AppNavigation(
             students = appState.students,
+            isDarkTheme = isDarkTheme,
+            onToggleTheme = {
+                appState = appState.updateThemeMode(nextThemeMode(isDarkTheme))
+            },
             onProfileSaved = { profile ->
                 appState = appState.updateStudent(profile)
             },

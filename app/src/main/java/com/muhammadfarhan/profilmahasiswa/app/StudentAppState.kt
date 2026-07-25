@@ -38,6 +38,9 @@ fun StudentAppState.updateStudent(profile: StudentProfile): StudentAppState {
     })
 }
 
+fun StudentAppState.updateThemeMode(themeMode: ThemeMode): StudentAppState =
+    copy(themeMode = themeMode)
+
 private const val FieldsPerStudent = 6
 
 fun saveStudentAppState(state: StudentAppState): ArrayList<String> = arrayListOf<String>().apply {

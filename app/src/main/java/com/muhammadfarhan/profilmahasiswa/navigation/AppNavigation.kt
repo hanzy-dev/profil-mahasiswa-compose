@@ -24,6 +24,8 @@ import kotlinx.coroutines.CoroutineStart
 @Composable
 fun AppNavigation(
     students: List<StudentProfile>,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
     onProfileSaved: (StudentProfile) -> Unit,
     onStudentCreated: (StudentProfile) -> Unit,
     modifier: Modifier = Modifier,
@@ -51,6 +53,8 @@ fun AppNavigation(
         composable(AppRoutes.STUDENTS) {
             StudentListScreen(
                 students = students,
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme,
                 snackbarHostState = snackbarHostState,
                 onAddStudent = { navController.navigate(AppRoutes.ADD_STUDENT) },
                 onStudentClick = { studentId ->
@@ -61,6 +65,8 @@ fun AppNavigation(
         composable(AppRoutes.ADD_STUDENT) {
             AddStudentRoute(
                 existingStudentIds = students.mapTo(mutableSetOf(), StudentProfile::studentId),
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme,
                 onStudentCreated = { profile ->
                     onStudentCreated(profile)
                     navController.popBackStack()
@@ -80,10 +86,16 @@ fun AppNavigation(
             val studentId = entry.arguments?.getString(AppRoutes.STUDENT_ID)
             val student = students.find { it.studentId == studentId }
             if (student == null) {
-                StudentNotFoundScreen(onBack = returnToStudents)
+                StudentNotFoundScreen(
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme,
+                    onBack = returnToStudents
+                )
             } else {
                 StudentProfileRoute(
                     profile = student,
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme,
                     onProfileSaved = onProfileSaved,
                     onBack = returnToStudents,
                     snackbarHostState = snackbarHostState,
