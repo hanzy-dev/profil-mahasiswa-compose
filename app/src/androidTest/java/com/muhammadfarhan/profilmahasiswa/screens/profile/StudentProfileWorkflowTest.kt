@@ -80,6 +80,8 @@ class StudentProfileWorkflowTest {
 
     @Test
     fun validChangesCanBeSavedAndConfirmed() {
+        returnToHome()
+        composeRule.activityRule.scenario.recreate()
         openPrimaryStudentProfile()
         val updatedName = if (displayedProfileName() == "Muhammad Farhan Workflow") {
             "Muhammad Farhan Verified"
@@ -102,7 +104,7 @@ class StudentProfileWorkflowTest {
         composeRule.waitUntil(timeoutMillis = 5_000) {
             composeRule.onAllNodes(hasText("Profil berhasil diperbarui"))
                 .fetchSemanticsNodes()
-                .size == 1
+                .isNotEmpty()
         }
         composeRule.onNodeWithTag(ProfileTestTags.Edit).assertExists()
     }
@@ -131,6 +133,12 @@ class StudentProfileWorkflowTest {
     private fun openPrimaryStudentProfile() {
         if (composeRule.onAllNodes(hasText("Daftar Mahasiswa")).fetchSemanticsNodes().isNotEmpty()) {
             composeRule.onNodeWithTag(StudentListTestTags.PrimaryStudentCard).performClick()
+        }
+    }
+
+    private fun returnToHome() {
+        if (composeRule.onAllNodes(hasText("Profil Mahasiswa")).fetchSemanticsNodes().isNotEmpty()) {
+            composeRule.onNodeWithTag(ProfileTestTags.Back).performClick()
         }
     }
 

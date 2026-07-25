@@ -7,6 +7,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.semantics.SemanticsProperties
 import com.muhammadfarhan.profilmahasiswa.MainActivity
 import com.muhammadfarhan.profilmahasiswa.screens.home.StudentListTestTags
 import com.muhammadfarhan.profilmahasiswa.screens.profile.ProfileTestTags
@@ -42,12 +44,19 @@ class AppNavigationTest {
     @Test
     fun savedNamePropagatesToHomeCard() {
         openProfile()
+        val currentName = composeRule.onNodeWithTag(ProfileTestTags.DisplayedName)
+            .fetchSemanticsNode().config[SemanticsProperties.Text].single().text
+        val updatedName = if (currentName == "Muhammad Farhan Navigation") {
+            "Muhammad Farhan Nav Verified"
+        } else {
+            "Muhammad Farhan Navigation"
+        }
         composeRule.onNodeWithTag(ProfileTestTags.Edit).performScrollTo().performClick()
         composeRule.onNodeWithTag(ProfileTestTags.Name)
-            .performTextReplacement("Muhammad Farhan A")
+            .performTextReplacement(updatedName)
         composeRule.onNodeWithTag(ProfileTestTags.Save).performScrollTo().performClick()
         composeRule.onNodeWithTag(ProfileTestTags.Back).performClick()
-        composeRule.onNodeWithText("Muhammad Farhan A", useUnmergedTree = true).assertExists()
+        composeRule.onNodeWithContentDescription("Buka profil mahasiswa $updatedName").assertExists()
     }
 
     private fun openProfile() {
