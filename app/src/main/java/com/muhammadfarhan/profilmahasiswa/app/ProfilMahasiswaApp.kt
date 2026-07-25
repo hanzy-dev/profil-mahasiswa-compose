@@ -25,6 +25,9 @@ fun ProfilMahasiswaApp() {
             students = appState.students,
             onProfileSaved = { profile ->
                 appState = appState.updateStudent(profile)
+            },
+            onStudentCreated = { profile ->
+                appState = appState.addStudent(profile)
             }
         )
     }

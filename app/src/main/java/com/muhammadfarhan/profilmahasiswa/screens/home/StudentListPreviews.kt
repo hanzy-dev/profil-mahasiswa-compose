@@ -2,14 +2,16 @@ package com.muhammadfarhan.profilmahasiswa.screens.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.SnackbarHostState
 import com.muhammadfarhan.profilmahasiswa.model.DefaultStudentProfile
+import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 import com.muhammadfarhan.profilmahasiswa.ui.theme.ProfilMahasiswaTheme
 
 @Preview(showBackground = true, showSystemUi = true, name = "Daftar - Terang")
 @Composable
 private fun StudentListLightPreview() {
     ProfilMahasiswaTheme(darkTheme = false) {
-        StudentListScreen(listOf(DefaultStudentProfile), {})
+        PreviewList(listOf(DefaultStudentProfile))
     }
 }
 
@@ -17,6 +19,36 @@ private fun StudentListLightPreview() {
 @Composable
 private fun StudentListDarkPreview() {
     ProfilMahasiswaTheme(darkTheme = true) {
-        StudentListScreen(listOf(DefaultStudentProfile), {})
+        PreviewList(previewStudents)
     }
 }
+
+@Preview(showBackground = true, showSystemUi = true, name = "Daftar - Banyak")
+@Composable
+private fun StudentListMultiplePreview() {
+    ProfilMahasiswaTheme { PreviewList(previewStudents) }
+}
+
+@Preview(showBackground = true, showSystemUi = true, name = "Daftar - Kosong")
+@Composable
+private fun StudentListEmptyPreview() {
+    ProfilMahasiswaTheme { PreviewList(emptyList()) }
+}
+
+@Composable
+private fun PreviewList(students: List<StudentProfile>) {
+    StudentListScreen(
+        students = students,
+        snackbarHostState = SnackbarHostState(),
+        onStudentClick = {},
+        onAddStudent = {}
+    )
+}
+
+private val previewStudents = listOf(
+    DefaultStudentProfile,
+    StudentProfile("Mahasiswa Demo 01", "10000001", "Program Demo", 2,
+        "demo01@example.com", "+62 8xx-xxxx-xxxx"),
+    StudentProfile("Mahasiswa Demo 02", "10000002", "Program Demo", 4,
+        "demo02@example.com", "+62 8xx-xxxx-xxxx")
+)

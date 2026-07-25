@@ -10,12 +10,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -34,21 +40,36 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.muhammadfarhan.profilmahasiswa.R
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
+import com.muhammadfarhan.profilmahasiswa.model.DefaultStudentProfile
 import com.muhammadfarhan.profilmahasiswa.ui.components.AppTopBar
 
 @Composable
 fun StudentListScreen(
     students: List<StudentProfile>,
+    snackbarHostState: SnackbarHostState,
     onStudentClick: (String) -> Unit,
+    onAddStudent: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier.testTag(StudentListTestTags.Screen),
-        topBar = { AppTopBar(title = stringResource(R.string.title_student_list)) }
+        topBar = { AppTopBar(title = stringResource(R.string.title_student_list)) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddStudent,
+                modifier = Modifier.testTag(StudentListTestTags.AddStudentFab)
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_student_content_description)
+                )
+            }
+        }
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
+            contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
@@ -61,13 +82,36 @@ fun StudentListScreen(
                 StudentCard(
                     student = student,
                     onClick = { onStudentClick(student.studentId) },
-                    modifier = if (student == students.firstOrNull()) {
-                        Modifier.testTag(StudentListTestTags.PrimaryStudentCard)
-                    } else Modifier
+                    isPrimary = student.studentId == DefaultStudentProfile.studentId,
+                    modifier = Modifier.testTag(
+                        if (student.studentId == DefaultStudentProfile.studentId) {
+                            StudentListTestTags.PrimaryStudentCard
+                        } else {
+                            StudentListTestTags.studentCard(student.studentId)
+                        }
+                    )
                 )
             }
             if (students.isEmpty()) {
-                item { Text(text = stringResource(R.string.student_list_empty)) }
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.student_list_empty_title),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            text = stringResource(R.string.student_list_empty_message),
+                            modifier = Modifier.padding(vertical = 12.dp)
+                        )
+                        Button(
+                            onClick = onAddStudent,
+                            modifier = Modifier.testTag(StudentListTestTags.EmptyStateAction)
+                        ) { Text(stringResource(R.string.add_student_action)) }
+                    }
+                }
             }
         }
     }
@@ -76,6 +120,7 @@ fun StudentListScreen(
 @Composable
 private fun StudentCard(
     student: StudentProfile,
+    isPrimary: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -122,7 +167,10 @@ private fun StudentCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = stringResource(R.string.primary_profile_label),
+                    text = stringResource(
+                        if (isPrimary) R.string.primary_profile_label
+                        else R.string.student_label
+                    ),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
