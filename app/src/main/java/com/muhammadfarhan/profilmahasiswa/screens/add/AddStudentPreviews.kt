@@ -45,6 +45,22 @@ private fun AddPreview(state: AddStudentUiState, dark: Boolean = false) {
 @Preview(
     showBackground = true,
     showSystemUi = true,
+    name = "Tambah - Teks Besar",
+    fontScale = 1.5f
+)
+@Composable private fun LargeFontPreview() = AddPreview(AddStudentUiState(form = completedForm))
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
+    name = "Tambah - Landscape",
+    device = "spec:width=640dp,height=360dp,dpi=420"
+)
+@Composable private fun LandscapePreview() = AddPreview(AddStudentUiState(form = completedForm))
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
     name = "Tambah - Layar Kecil",
     device = "spec:width=360dp,height=640dp,dpi=420"
 )

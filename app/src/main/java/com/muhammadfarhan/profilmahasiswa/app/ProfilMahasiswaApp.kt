@@ -20,6 +20,7 @@ fun ProfilMahasiswaApp() {
     ProfilMahasiswaTheme(darkTheme = isDarkTheme) {
         AppNavigation(
             students = appState.students,
+            gradesByStudentId = appState.gradesByStudentId,
             isDarkTheme = isDarkTheme,
             onToggleTheme = {
                 appState = appState.updateThemeMode(nextThemeMode(isDarkTheme))

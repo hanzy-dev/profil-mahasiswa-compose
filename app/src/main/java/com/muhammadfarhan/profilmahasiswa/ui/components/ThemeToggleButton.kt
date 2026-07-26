@@ -1,5 +1,7 @@
 package com.muhammadfarhan.profilmahasiswa.ui.components
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
@@ -39,11 +41,20 @@ fun ThemeToggleButton(
                 stateDescription = stateDescriptionStr
             }
     ) {
-        Icon(
-            imageVector = if (isDarkTheme) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-            contentDescription = actionDescriptionStr,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+        AnimatedContent(
+            targetState = isDarkTheme,
+            transitionSpec = {
+                (fadeIn(animationSpec = tween(200)) + scaleIn(initialScale = 0.8f))
+                    .togetherWith(fadeOut(animationSpec = tween(200)) + scaleOut(targetScale = 0.8f))
+            },
+            label = "ThemeIconTransition"
+        ) { targetIsDark ->
+            Icon(
+                imageVector = if (targetIsDark) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                contentDescription = actionDescriptionStr,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
     }
 }
 

@@ -6,7 +6,8 @@ data class StudentProfile(
     val studyProgram: String,
     val semester: Int,
     val email: String,
-    val phone: String
+    val phone: String,
+    val profileImageUri: String? = null
 )
 
 val DefaultStudentProfile = StudentProfile(
@@ -16,4 +17,11 @@ val DefaultStudentProfile = StudentProfile(
     semester = 6,
     email = "muhammad.farhan@example.com",
     phone = "+62 8xx-xxxx-xxxx"
+)
+
+data class CourseGrade(
+    val courseCode: String,
+    val courseName: String,
+    val numericScore: Int,
+    val letterGrade: String
 )

@@ -12,4 +12,6 @@ object ProfileTestTags {
     const val Edit = "profile_edit"
     const val Save = "profile_save"
     const val Cancel = "profile_cancel"
+    const val PhotoAction = "profile_photo_action"
+    const val ViewGrades = "profile_view_grades"
 }

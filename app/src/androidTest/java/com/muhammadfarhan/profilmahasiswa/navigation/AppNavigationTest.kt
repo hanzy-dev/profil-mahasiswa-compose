@@ -1,17 +1,12 @@
 package com.muhammadfarhan.profilmahasiswa.navigation
 
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performTextReplacement
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.semantics.SemanticsProperties
 import com.muhammadfarhan.profilmahasiswa.MainActivity
 import com.muhammadfarhan.profilmahasiswa.screens.home.StudentListTestTags
 import com.muhammadfarhan.profilmahasiswa.screens.profile.ProfileTestTags
+import com.muhammadfarhan.profilmahasiswa.screens.grades.StudentGradesTestTags
 import org.junit.Rule
 import org.junit.Test
 
@@ -57,6 +52,22 @@ class AppNavigationTest {
         composeRule.onNodeWithTag(ProfileTestTags.Save).performScrollTo().performClick()
         composeRule.onNodeWithTag(ProfileTestTags.Back).performClick()
         composeRule.onNodeWithContentDescription("Buka profil mahasiswa $updatedName").assertExists()
+    }
+
+    @Test
+    fun tappingViewGradesOpensGradesScreen() {
+        openProfile()
+        composeRule.onNodeWithTag(ProfileTestTags.ViewGrades).performScrollTo().performClick()
+        composeRule.onNodeWithTag(StudentGradesTestTags.Screen).assertIsDisplayed()
+        composeRule.onNodeWithTag(StudentGradesTestTags.Back).assertIsDisplayed()
+    }
+
+    @Test
+    fun backFromGradesReturnsToProfile() {
+        openProfile()
+        composeRule.onNodeWithTag(ProfileTestTags.ViewGrades).performScrollTo().performClick()
+        composeRule.onNodeWithTag(StudentGradesTestTags.Back).performClick()
+        composeRule.onNodeWithTag(ProfileTestTags.Screen).assertIsDisplayed()
     }
 
     private fun openProfile() {

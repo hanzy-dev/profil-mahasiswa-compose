@@ -1,5 +1,8 @@
 package com.muhammadfarhan.profilmahasiswa.screens.profile
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +18,7 @@ fun StudentProfileRoute(
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
     onProfileSaved: (StudentProfile) -> Unit,
+    onViewGradesClick: () -> Unit,
     onBack: () -> Unit,
     snackbarHostState: SnackbarHostState,
     onProfileSaveSuccess: () -> Unit,
@@ -27,6 +31,15 @@ fun StudentProfileRoute(
     var fieldErrors by rememberSaveable(profile.studentId, stateSaver = ProfileFieldErrorsSaver) {
         mutableStateOf(ProfileFieldErrors())
     }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            draftProfile = draftProfile.copy(profileImageUri = uri.toString())
+        }
+    }
+
     fun updateDraft(updatedProfile: StudentProfile) {
         draftProfile = updatedProfile
         fieldErrors = validateStudentProfile(updatedProfile)
@@ -71,6 +84,12 @@ fun StudentProfileRoute(
         },
         onEmailChange = { email -> updateDraft(draftProfile.copy(email = email)) },
         onPhoneChange = { phone -> updateDraft(draftProfile.copy(phone = phone)) },
+        onPickPhoto = {
+            photoPickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        },
+        onViewGradesClick = onViewGradesClick,
         modifier = modifier
     )
 }

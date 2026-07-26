@@ -56,4 +56,20 @@
     <string name="action_enable_light_theme">Aktifkan tema terang</string>
     <string name="state_dark_theme_active">Tema gelap aktif</string>
     <string name="state_light_theme_active">Tema terang aktif</string>
+
+    <!-- Batch 7D -->
+    <string name="action_pick_profile_photo">Pilih foto profil</string>
+    <string name="action_change_profile_photo">Ganti foto profil</string>
+    <string name="content_description_student_photo">Foto profil mahasiswa</string>
+    <string name="action_view_grades">Lihat Data Nilai</string>
+    <string name="title_grades">Data Nilai</string>
+    <string name="label_demo_grades">Data nilai demonstrasi</string>
+    <string name="label_course_count">Jumlah mata kuliah</string>
+    <string name="label_average_score">Rata-rata nilai</string>
+    <string name="label_highest_score">Nilai tertinggi</string>
+    <string name="label_course_code">Kode</string>
+    <string name="label_course_name">Mata kuliah</string>
+    <string name="label_score">Nilai</string>
+    <string name="grades_empty_title">Belum ada data nilai</string>
+    <string name="grades_empty_message">Data nilai mahasiswa ini belum tersedia.</string>
 </resources>

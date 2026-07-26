@@ -1,37 +1,26 @@
 package com.muhammadfarhan.profilmahasiswa.screens.add
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.animation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -51,7 +40,7 @@ fun AddStudentScreen(
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
-    val requesters = List(6) { remember { FocusRequester() } }
+    val requesters = remember { List(6) { FocusRequester() } }
     val form = uiState.form
 
     Scaffold(
@@ -64,98 +53,143 @@ fun AddStudentScreen(
             )
         }
     ) { innerPadding ->
-        Box(
-            modifier = Modifier.fillMaxSize().padding(innerPadding).imePadding(),
-            contentAlignment = Alignment.TopCenter
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth().widthIn(max = 600.dp)
-                    .verticalScroll(rememberScrollState()).padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            Card(
+                modifier = Modifier.fillMaxWidth().widthIn(max = 600.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                )
             ) {
-                Text(text = stringResource(R.string.add_student_intro))
-                AddStudentField(
-                    value = form.name,
-                    onValueChange = { onFormChange(form.copy(name = it)) },
-                    label = R.string.label_name,
-                    error = errorText(uiState.errors.name, AddField.Name),
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next,
-                    requester = requesters[0],
-                    onNext = { requesters[1].requestFocus() },
-                    tag = AddStudentTestTags.Name
-                )
-                AddStudentField(
-                    value = form.studentId,
-                    onValueChange = { onFormChange(form.copy(studentId = it)) },
-                    label = R.string.label_student_id,
-                    error = errorText(uiState.errors.studentId, AddField.StudentId),
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next,
-                    requester = requesters[1],
-                    onNext = { requesters[2].requestFocus() },
-                    tag = AddStudentTestTags.StudentId
-                )
-                AddStudentField(
-                    value = form.studyProgram,
-                    onValueChange = { onFormChange(form.copy(studyProgram = it)) },
-                    label = R.string.label_study_program,
-                    error = errorText(uiState.errors.studyProgram, AddField.StudyProgram),
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next,
-                    requester = requesters[2],
-                    onNext = { requesters[3].requestFocus() },
-                    tag = AddStudentTestTags.StudyProgram
-                )
-                AddStudentField(
-                    value = form.semester,
-                    onValueChange = { onFormChange(form.copy(semester = it)) },
-                    label = R.string.label_semester,
-                    error = errorText(uiState.errors.semester, AddField.Semester),
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next,
-                    requester = requesters[3],
-                    onNext = { requesters[4].requestFocus() },
-                    tag = AddStudentTestTags.Semester
-                )
-                AddStudentField(
-                    value = form.email,
-                    onValueChange = { onFormChange(form.copy(email = it)) },
-                    label = R.string.label_email,
-                    error = errorText(uiState.errors.email, AddField.Email),
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next,
-                    requester = requesters[4],
-                    onNext = { requesters[5].requestFocus() },
-                    tag = AddStudentTestTags.Email
-                )
-                AddStudentField(
-                    value = form.phone,
-                    onValueChange = { onFormChange(form.copy(phone = it)) },
-                    label = R.string.label_phone,
-                    error = errorText(uiState.errors.phone, AddField.Phone),
-                    keyboardType = KeyboardType.Phone,
-                    imeAction = ImeAction.Done,
-                    requester = requesters[5],
-                    onNext = { focusManager.clearFocus() },
-                    tag = AddStudentTestTags.Phone
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedButton(
-                        onClick = { focusManager.clearFocus(); onCancel() },
-                        modifier = Modifier.weight(1f).heightIn(min = 48.dp)
-                            .testTag(AddStudentTestTags.Cancel)
-                    ) { Text(stringResource(R.string.action_cancel)) }
-                    Spacer(Modifier.width(12.dp))
-                    Button(
-                        onClick = { focusManager.clearFocus(); onSave() },
-                        enabled = uiState.canSave,
-                        modifier = Modifier.weight(1f).heightIn(min = 48.dp)
-                            .testTag(AddStudentTestTags.Save)
-                    ) { Text(stringResource(R.string.action_save)) }
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.add_student_intro),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    
+                    AddStudentField(
+                        value = form.name,
+                        onValueChange = { onFormChange(form.copy(name = it)) },
+                        label = R.string.label_name,
+                        icon = Icons.Default.Person,
+                        error = errorText(uiState.errors.name, AddField.Name),
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next,
+                        requester = requesters[0],
+                        onNext = { requesters[1].requestFocus() },
+                        tag = AddStudentTestTags.Name
+                    )
+                    AddStudentField(
+                        value = form.studentId,
+                        onValueChange = { onFormChange(form.copy(studentId = it)) },
+                        label = R.string.label_student_id,
+                        icon = Icons.Default.Badge,
+                        error = errorText(uiState.errors.studentId, AddField.StudentId),
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next,
+                        requester = requesters[1],
+                        onNext = { requesters[2].requestFocus() },
+                        tag = AddStudentTestTags.StudentId
+                    )
+                    AddStudentField(
+                        value = form.studyProgram,
+                        onValueChange = { onFormChange(form.copy(studyProgram = it)) },
+                        label = R.string.label_study_program,
+                        icon = Icons.Default.School,
+                        error = errorText(uiState.errors.studyProgram, AddField.StudyProgram),
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next,
+                        requester = requesters[2],
+                        onNext = { requesters[3].requestFocus() },
+                        tag = AddStudentTestTags.StudyProgram
+                    )
+                    AddStudentField(
+                        value = form.semester,
+                        onValueChange = { onFormChange(form.copy(semester = it)) },
+                        label = R.string.label_semester,
+                        icon = Icons.Default.CalendarToday,
+                        error = errorText(uiState.errors.semester, AddField.Semester),
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next,
+                        requester = requesters[3],
+                        onNext = { requesters[4].requestFocus() },
+                        tag = AddStudentTestTags.Semester
+                    )
+                    AddStudentField(
+                        value = form.email,
+                        onValueChange = { onFormChange(form.copy(email = it)) },
+                        label = R.string.label_email,
+                        icon = Icons.Default.Email,
+                        error = errorText(uiState.errors.email, AddField.Email),
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next,
+                        requester = requesters[4],
+                        onNext = { requesters[5].requestFocus() },
+                        tag = AddStudentTestTags.Email
+                    )
+                    AddStudentField(
+                        value = form.phone,
+                        onValueChange = { onFormChange(form.copy(phone = it)) },
+                        label = R.string.label_phone,
+                        icon = Icons.Default.Phone,
+                        error = errorText(uiState.errors.phone, AddField.Phone),
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Done,
+                        requester = requesters[5],
+                        onNext = { focusManager.clearFocus() },
+                        tag = AddStudentTestTags.Phone
+                    )
                 }
             }
+            
+            Row(
+                modifier = Modifier.fillMaxWidth().widthIn(max = 600.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick = { focusManager.clearFocus(); onCancel() },
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+                        .testTag(AddStudentTestTags.Cancel),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+                
+                Button(
+                    onClick = { focusManager.clearFocus(); onSave() },
+                    enabled = uiState.canSave,
+                    modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+                        .testTag(AddStudentTestTags.Save),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    AnimatedContent(
+                        targetState = uiState.canSave,
+                        label = "SaveButtonIcon"
+                    ) { canSave ->
+                        if (canSave) {
+                            Icon(Icons.Default.Check, contentDescription = null)
+                        } else {
+                            Icon(Icons.Default.Save, contentDescription = null)
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.action_save))
+                }
+            }
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
@@ -165,6 +199,7 @@ private fun AddStudentField(
     value: String,
     onValueChange: (String) -> Unit,
     @StringRes label: Int,
+    icon: ImageVector,
     error: String?,
     keyboardType: KeyboardType,
     imeAction: ImeAction,
@@ -176,13 +211,22 @@ private fun AddStudentField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(stringResource(label)) },
+        leadingIcon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+            )
+        },
         supportingText = error?.let { message -> { Text(message) } },
         isError = error != null,
         singleLine = true,
+        shape = RoundedCornerShape(12.dp),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
-        keyboardActions = if (imeAction == ImeAction.Done) {
-            KeyboardActions(onDone = { onNext() })
-        } else KeyboardActions(onNext = { onNext() }),
+        keyboardActions = KeyboardActions(
+            onNext = { onNext() },
+            onDone = { onNext() }
+        ),
         modifier = Modifier.fillMaxWidth().focusRequester(requester).testTag(tag)
     )
 }

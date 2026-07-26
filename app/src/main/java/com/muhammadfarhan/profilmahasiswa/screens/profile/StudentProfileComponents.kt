@@ -1,36 +1,17 @@
 package com.muhammadfarhan.profilmahasiswa.screens.profile
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,96 +19,153 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.muhammadfarhan.profilmahasiswa.R
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
+import com.muhammadfarhan.profilmahasiswa.ui.components.AppSectionTitle
+import com.muhammadfarhan.profilmahasiswa.ui.components.InfoRow
 
 @Composable
 fun ProfileHeader(
     profile: StudentProfile,
+    isEditing: Boolean = false,
+    onPickPhoto: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ProfileAvatar()
-        Spacer(modifier = Modifier.height(8.dp))
+        ProfileAvatar(
+            imageUri = profile.profileImageUri,
+            isEditing = isEditing,
+            onPickPhoto = onPickPhoto
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
+                    shape = CircleShape
+                )
+                .padding(horizontal = 12.dp, vertical = 4.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.Check,
+                imageVector = Icons.Default.CheckCircle,
                 contentDescription = null,
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(16.dp),
                 tint = MaterialTheme.colorScheme.secondary
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = stringResource(R.string.active_student_status),
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.secondary
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.secondary,
+                fontWeight = FontWeight.Bold
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = profile.name,
             modifier = Modifier.testTag(ProfileTestTags.DisplayedName),
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = stringResource(R.string.student_id_format, profile.studentId),
+            style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         AcademicInfo(profile = profile)
     }
 }
 
 @Composable
-fun ProfileAvatar(modifier: Modifier = Modifier) {
+fun ProfileAvatar(
+    imageUri: String?,
+    isEditing: Boolean = false,
+    onPickPhoto: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Box(
+        Surface(
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .border(3.dp, MaterialTheme.colorScheme.primary, CircleShape),
-            contentAlignment = Alignment.Center
+                .border(4.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f), CircleShape),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primaryContainer,
+            tonalElevation = 2.dp
         ) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = stringResource(
-                    R.string.content_description_profile_photo
-                ),
-                modifier = Modifier.size(60.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+            AnimatedContent(
+                targetState = imageUri,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(250)) togetherWith fadeOut(animationSpec = tween(250))
+                },
+                label = "AvatarImageTransition"
+            ) { targetUri ->
+                if (targetUri != null) {
+                    AsyncImage(
+                        model = targetUri,
+                        contentDescription = stringResource(R.string.content_description_student_photo),
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = stringResource(
+                            R.string.content_description_profile_photo
+                        ),
+                        modifier = Modifier.size(60.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(28.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.secondary)
-                .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape),
-            contentAlignment = Alignment.Center
+        
+        AnimatedVisibility(
+            visible = isEditing,
+            enter = scaleIn() + fadeIn(),
+            exit = scaleOut() + fadeOut(),
+            modifier = Modifier.align(Alignment.BottomEnd)
         ) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onSecondary
+            val description = stringResource(
+                if (imageUri == null) R.string.action_pick_profile_photo 
+                else R.string.action_change_profile_photo
             )
+            FilledIconButton(
+                onClick = onPickPhoto,
+                modifier = Modifier
+                    .size(48.dp) // Professional touch target size
+                    .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
+                    .semantics { contentDescription = description }
+                    .testTag(ProfileTestTags.PhotoAction),
+                colors = IconButtonDefaults.filledIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CameraAlt,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
@@ -137,33 +175,36 @@ fun AcademicInfo(
     profile: StudentProfile,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 14.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        shape = RoundedCornerShape(16.dp),
+        tonalElevation = 1.dp
     ) {
-        Icon(
-            imageVector = Icons.Default.School,
-            contentDescription = stringResource(
-                R.string.content_description_study_program
-            ),
-            modifier = Modifier.size(20.dp),
-            tint = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = stringResource(
-                R.string.academic_info_format,
-                profile.studyProgram,
-                profile.semester
-            ),
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-            fontWeight = FontWeight.Medium
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.School,
+                contentDescription = stringResource(
+                    R.string.content_description_study_program
+                ),
+                modifier = Modifier.size(20.dp),
+                tint = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = stringResource(
+                    R.string.academic_info_format,
+                    profile.studyProgram,
+                    profile.semester
+                ),
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 
@@ -182,51 +223,64 @@ fun ContactInformationCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        )
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                text = stringResource(R.string.contact_information),
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            ContactField(
-                testTag = ProfileTestTags.Email,
-                icon = Icons.Default.Email,
-                label = stringResource(R.string.label_email),
-                value = profile.email,
-                enabled = isEditing,
-                error = fieldErrors.email,
-                requiredError = R.string.error_email_required,
-                tooLongError = null,
-                invalidFormatError = R.string.error_email_invalid,
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next,
-                focusRequester = emailFocusRequester,
-                onImeAction = onEmailNext,
-                onValueChange = onEmailChange
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            ContactField(
-                testTag = ProfileTestTags.Phone,
-                icon = Icons.Default.Phone,
-                label = stringResource(R.string.label_phone),
-                value = profile.phone,
-                enabled = isEditing,
-                error = fieldErrors.phone,
-                requiredError = R.string.error_phone_required,
-                tooLongError = null,
-                invalidFormatError = R.string.error_phone_invalid,
-                keyboardType = KeyboardType.Phone,
-                imeAction = ImeAction.Done,
-                focusRequester = phoneFocusRequester,
-                onImeAction = onPhoneDone,
-                onValueChange = onPhoneChange
-            )
+            AppSectionTitle(title = stringResource(R.string.contact_information))
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            if (isEditing) {
+                ContactField(
+                    testTag = ProfileTestTags.Email,
+                    icon = Icons.Default.Email,
+                    label = stringResource(R.string.label_email),
+                    value = profile.email,
+                    enabled = true,
+                    error = fieldErrors.email,
+                    requiredError = R.string.error_email_required,
+                    tooLongError = null,
+                    invalidFormatError = R.string.error_email_invalid,
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
+                    focusRequester = emailFocusRequester,
+                    onImeAction = onEmailNext,
+                    onValueChange = onEmailChange
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                ContactField(
+                    testTag = ProfileTestTags.Phone,
+                    icon = Icons.Default.Phone,
+                    label = stringResource(R.string.label_phone),
+                    value = profile.phone,
+                    enabled = true,
+                    error = fieldErrors.phone,
+                    requiredError = R.string.error_phone_required,
+                    tooLongError = null,
+                    invalidFormatError = R.string.error_phone_invalid,
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Done,
+                    focusRequester = phoneFocusRequester,
+                    onImeAction = onPhoneDone,
+                    onValueChange = onPhoneChange
+                )
+            } else {
+                InfoRow(
+                    label = stringResource(R.string.label_email),
+                    value = profile.email,
+                    icon = Icons.Default.Email,
+                    modifier = Modifier.testTag(ProfileTestTags.Email)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                InfoRow(
+                    label = stringResource(R.string.label_phone),
+                    value = profile.phone,
+                    icon = Icons.Default.Phone,
+                    modifier = Modifier.testTag(ProfileTestTags.Phone)
+                )
+            }
         }
     }
 }
@@ -245,17 +299,15 @@ fun ProfileDetailsCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         )
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                text = stringResource(R.string.profile_information),
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            AppSectionTitle(title = stringResource(R.string.profile_information))
+            Spacer(modifier = Modifier.height(8.dp))
+            
             ContactField(
                 testTag = ProfileTestTags.Name,
                 icon = Icons.Default.Person,
@@ -318,56 +370,37 @@ fun ContactField(
         null -> null
     }
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(10.dp)
-            )
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        enabled = enabled,
+        isError = errorMessage != null,
+        label = { Text(label) },
+        leadingIcon = {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = if (errorMessage != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
             )
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            enabled = enabled,
-            isError = errorMessage != null,
-            label = { Text(label) },
-            supportingText = errorMessage?.let { message ->
-                { Text(text = message) }
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = keyboardType,
-                imeAction = imeAction
-            ),
-            keyboardActions = if (imeAction == ImeAction.Done) {
-                KeyboardActions(onDone = { onImeAction() })
-            } else {
-                KeyboardActions(onNext = { onImeAction() })
-            },
-            singleLine = enabled,
-            maxLines = if (enabled) 1 else 2,
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag(testTag)
-                .focusRequester(focusRequester)
-        )
-    }
+        },
+        supportingText = errorMessage?.let { message ->
+            { Text(text = message) }
+        },
+        shape = RoundedCornerShape(12.dp),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType,
+            imeAction = imeAction
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { onImeAction() },
+            onDone = { onImeAction() }
+        ),
+        singleLine = true,
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag(testTag)
+            .focusRequester(focusRequester)
+    )
 }
 
 @Composable
@@ -377,53 +410,48 @@ fun ProfileActions(
     onEditClick: () -> Unit,
     onSaveClick: () -> Unit,
     onCancelClick: () -> Unit,
+    onViewGradesClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        if (isEditing && maxWidth < 360.dp) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = onSaveClick,
-                    enabled = saveEnabled,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(ProfileTestTags.Save)
-                        .heightIn(min = 48.dp)
-                ) {
-                    SaveButtonContent()
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedButton(
-                    onClick = onCancelClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag(ProfileTestTags.Cancel)
-                        .heightIn(min = 48.dp)
-                ) {
-                    Text(text = stringResource(R.string.action_cancel))
-                }
-            }
-        } else if (isEditing) {
-            Row(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        if (isEditing) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 OutlinedButton(
                     onClick = onCancelClick,
                     modifier = Modifier
                         .weight(1f)
-                        .testTag(ProfileTestTags.Cancel)
-                        .heightIn(min = 48.dp)
+                        .heightIn(min = 52.dp)
+                        .testTag(ProfileTestTags.Cancel),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(text = stringResource(R.string.action_cancel))
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+                
                 Button(
                     onClick = onSaveClick,
                     enabled = saveEnabled,
                     modifier = Modifier
                         .weight(1f)
-                        .testTag(ProfileTestTags.Save)
-                        .heightIn(min = 48.dp)
+                        .heightIn(min = 52.dp)
+                        .testTag(ProfileTestTags.Save),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    SaveButtonContent()
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.action_save),
+                        style = MaterialTheme.typography.labelLarge
+                    )
                 }
             }
         } else {
@@ -431,8 +459,8 @@ fun ProfileActions(
                 onClick = onEditClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag(ProfileTestTags.Edit)
-                    .heightIn(min = 48.dp),
+                    .heightIn(min = 52.dp)
+                    .testTag(ProfileTestTags.Edit),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Icon(
@@ -446,20 +474,26 @@ fun ProfileActions(
                     style = MaterialTheme.typography.labelLarge
                 )
             }
+            
+            OutlinedButton(
+                onClick = onViewGradesClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 52.dp)
+                    .testTag(ProfileTestTags.ViewGrades),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Assessment,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.action_view_grades),
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
         }
     }
-}
-
-@Composable
-private fun SaveButtonContent() {
-    Icon(
-        imageVector = Icons.Default.Check,
-        contentDescription = null,
-        modifier = Modifier.size(20.dp)
-    )
-    Spacer(modifier = Modifier.width(8.dp))
-    Text(
-        text = stringResource(R.string.action_save),
-        style = MaterialTheme.typography.labelLarge
-    )
 }

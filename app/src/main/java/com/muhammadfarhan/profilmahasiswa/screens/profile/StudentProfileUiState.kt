@@ -7,9 +7,11 @@ data class StudentProfileUiState(
     val savedProfile: StudentProfile,
     val draftProfile: StudentProfile = savedProfile,
     val isEditing: Boolean = false,
-    val fieldErrors: ProfileFieldErrors = ProfileFieldErrors(),
-    val hasChanges: Boolean = draftProfile != savedProfile
+    val fieldErrors: ProfileFieldErrors = ProfileFieldErrors()
 ) {
+    val hasChanges: Boolean
+        get() = draftProfile != savedProfile
+
     val displayedProfile: StudentProfile
         get() = if (isEditing) draftProfile else savedProfile
 
@@ -27,7 +29,8 @@ val StudentProfileSaver = listSaver<StudentProfile, Any>(
             profile.studyProgram,
             profile.semester,
             profile.email,
-            profile.phone
+            profile.phone,
+            profile.profileImageUri ?: ""
         )
     },
     restore = { values ->
@@ -37,7 +40,8 @@ val StudentProfileSaver = listSaver<StudentProfile, Any>(
             studyProgram = values[2] as String,
             semester = values[3] as Int,
             email = values[4] as String,
-            phone = values[5] as String
+            phone = values[5] as String,
+            profileImageUri = (values[6] as String).ifEmpty { null }
         )
     }
 )
@@ -52,13 +56,14 @@ val ProfileFieldErrorsSaver = listSaver<ProfileFieldErrors, String>(
         )
     },
     restore = { values ->
+        fun safeError(value: String) = value.takeIf(String::isNotEmpty)?.let {
+            runCatching { ProfileFieldError.valueOf(it) }.getOrNull()
+        }
         ProfileFieldErrors(
-            name = values[0].takeIf(String::isNotEmpty)?.let(ProfileFieldError::valueOf),
-            studyProgram = values[1]
-                .takeIf(String::isNotEmpty)
-                ?.let(ProfileFieldError::valueOf),
-            email = values[2].takeIf(String::isNotEmpty)?.let(ProfileFieldError::valueOf),
-            phone = values[3].takeIf(String::isNotEmpty)?.let(ProfileFieldError::valueOf)
+            name = safeError(values[0]),
+            studyProgram = safeError(values[1]),
+            email = safeError(values[2]),
+            phone = safeError(values[3])
         )
     }
 )

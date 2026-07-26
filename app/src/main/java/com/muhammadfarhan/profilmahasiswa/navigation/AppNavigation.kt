@@ -14,8 +14,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.muhammadfarhan.profilmahasiswa.model.CourseGrade
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 import com.muhammadfarhan.profilmahasiswa.screens.common.StudentNotFoundScreen
+import com.muhammadfarhan.profilmahasiswa.screens.grades.StudentGradesScreen
 import com.muhammadfarhan.profilmahasiswa.screens.home.StudentListScreen
 import com.muhammadfarhan.profilmahasiswa.screens.profile.StudentProfileRoute
 import kotlinx.coroutines.launch
@@ -24,6 +26,7 @@ import kotlinx.coroutines.CoroutineStart
 @Composable
 fun AppNavigation(
     students: List<StudentProfile>,
+    gradesByStudentId: Map<String, List<CourseGrade>>,
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
     onProfileSaved: (StudentProfile) -> Unit,
@@ -36,10 +39,12 @@ fun AppNavigation(
     val navigationScope = rememberCoroutineScope()
     val studentAddedMessage = stringResource(R.string.student_added_success)
     val profileUpdatedMessage = stringResource(R.string.profile_update_success)
+    
     val returnToStudents = {
         if (!navController.popBackStack()) {
             navController.navigate(AppRoutes.STUDENTS) {
                 popUpTo(navController.graph.id) { inclusive = true }
+                launchSingleTop = true
             }
         }
         Unit
@@ -56,9 +61,15 @@ fun AppNavigation(
                 isDarkTheme = isDarkTheme,
                 onToggleTheme = onToggleTheme,
                 snackbarHostState = snackbarHostState,
-                onAddStudent = { navController.navigate(AppRoutes.ADD_STUDENT) },
+                onAddStudent = { 
+                    navController.navigate(AppRoutes.ADD_STUDENT) {
+                        launchSingleTop = true
+                    }
+                },
                 onStudentClick = { studentId ->
-                    navController.navigate(AppRoutes.studentDetail(studentId))
+                    navController.navigate(AppRoutes.studentDetail(studentId)) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -80,7 +91,10 @@ fun AppNavigation(
         composable(
             route = AppRoutes.STUDENT_DETAIL,
             arguments = listOf(
-                navArgument(AppRoutes.STUDENT_ID) { type = NavType.StringType }
+                navArgument(AppRoutes.STUDENT_ID) { 
+                    type = NavType.StringType 
+                    nullable = false
+                }
             )
         ) { entry ->
             val studentId = entry.arguments?.getString(AppRoutes.STUDENT_ID)
@@ -97,6 +111,11 @@ fun AppNavigation(
                     isDarkTheme = isDarkTheme,
                     onToggleTheme = onToggleTheme,
                     onProfileSaved = onProfileSaved,
+                    onViewGradesClick = {
+                        navController.navigate(AppRoutes.studentGrades(student.studentId)) {
+                            launchSingleTop = true
+                        }
+                    },
                     onBack = returnToStudents,
                     snackbarHostState = snackbarHostState,
                     onProfileSaveSuccess = {
@@ -104,6 +123,35 @@ fun AppNavigation(
                             snackbarHostState.showSnackbar(profileUpdatedMessage)
                         }
                     }
+                )
+            }
+        }
+        composable(
+            route = AppRoutes.STUDENT_GRADES,
+            arguments = listOf(
+                navArgument(AppRoutes.STUDENT_ID) { 
+                    type = NavType.StringType 
+                    nullable = false
+                }
+            )
+        ) { entry ->
+            val studentId = entry.arguments?.getString(AppRoutes.STUDENT_ID)
+            val student = students.find { it.studentId == studentId }
+            val grades = studentId?.let { gradesByStudentId[it] } ?: emptyList()
+            
+            if (student == null) {
+                StudentNotFoundScreen(
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme,
+                    onBack = returnToStudents
+                )
+            } else {
+                StudentGradesScreen(
+                    student = student,
+                    grades = grades,
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme,
+                    onBack = { navController.popBackStack() }
                 )
             }
         }

@@ -1,10 +1,12 @@
 package com.muhammadfarhan.profilmahasiswa.app
 
+import com.muhammadfarhan.profilmahasiswa.model.CourseGrade
 import com.muhammadfarhan.profilmahasiswa.model.DefaultStudentProfile
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class StudentAppStateTest {
@@ -142,5 +144,71 @@ class StudentAppStateTest {
         val restored = restoreStudentAppState(malformedValues)
         assertEquals(ThemeMode.SYSTEM, restored.themeMode)
         assertEquals(DefaultStudentAppState.students, restored.students)
+    }
+
+    @Test
+    fun demoGradesExistOnlyForMuhammadFarhan() {
+        val farhanGrades = DefaultStudentAppState.getGradesForStudent(DefaultStudentProfile.studentId)
+        assertTrue(farhanGrades.isNotEmpty())
+        assertEquals(6, farhanGrades.size)
+        
+        val otherGrades = DefaultStudentAppState.getGradesForStudent("other-id")
+        assertTrue(otherGrades.isEmpty())
+    }
+
+    @Test
+    fun runtimeStudentHasEmptyGrades() {
+        val newState = DefaultStudentAppState.addStudent(secondStudent)
+        val grades = newState.getGradesForStudent(secondStudent.studentId)
+        assertTrue(grades.isEmpty())
+    }
+
+    @Test
+    fun gradeCalculationsAreCorrect() {
+        val grades = listOf(
+            CourseGrade("C1", "Course 1", 90, "A"),
+            CourseGrade("C2", "Course 2", 80, "B")
+        )
+        assertEquals(85.0, grades.averageScore(), 0.001)
+        assertEquals(90, grades.highestScore())
+    }
+
+    @Test
+    fun emptyGradesCalculationSafety() {
+        val grades = emptyList<CourseGrade>()
+        assertEquals(0.0, grades.averageScore(), 0.001)
+        assertEquals(0, grades.highestScore())
+    }
+
+    @Test
+    fun saverRestoresProfileImageUri() {
+        val profileWithPhoto = DefaultStudentProfile.copy(profileImageUri = "content://photo")
+        val state = StudentAppState(listOf(profileWithPhoto))
+        val restored = restoreStudentAppState(saveStudentAppState(state))
+        assertEquals("content://photo", restored.students.first().profileImageUri)
+    }
+
+    @Test
+    fun saverRestoresGrades() {
+        val state = DefaultStudentAppState
+        val restored = restoreStudentAppState(saveStudentAppState(state))
+        assertEquals(state.gradesByStudentId, restored.gradesByStudentId)
+    }
+
+    @Test
+    fun fullStateRoundTrip() {
+        val state = StudentAppState(
+            students = listOf(
+                DefaultStudentProfile.copy(profileImageUri = "uri1"),
+                secondStudent.copy(profileImageUri = null)
+            ),
+            themeMode = ThemeMode.DARK,
+            gradesByStudentId = mapOf(
+                DefaultStudentProfile.studentId to listOf(CourseGrade("C1", "N1", 100, "A")),
+                secondStudent.studentId to emptyList()
+            )
+        )
+        val restored = restoreStudentAppState(saveStudentAppState(state))
+        assertEquals(state, restored)
     }
 }

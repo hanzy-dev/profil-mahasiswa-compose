@@ -1,16 +1,28 @@
 package com.muhammadfarhan.profilmahasiswa.app
 
 import androidx.compose.runtime.saveable.Saver
+import com.muhammadfarhan.profilmahasiswa.model.CourseGrade
 import com.muhammadfarhan.profilmahasiswa.model.DefaultStudentProfile
 import com.muhammadfarhan.profilmahasiswa.model.StudentProfile
 
 data class StudentAppState(
     val students: List<StudentProfile>,
-    val themeMode: ThemeMode = ThemeMode.SYSTEM
+    val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val gradesByStudentId: Map<String, List<CourseGrade>> = emptyMap()
+)
+
+val FarhanGrades = listOf(
+    CourseGrade("IF101", "Pemrograman Mobile", 85, "A"),
+    CourseGrade("IF102", "Basis Data", 80, "A-"),
+    CourseGrade("IF103", "Rekayasa Perangkat Lunak", 78, "B+"),
+    CourseGrade("IF104", "Jaringan Komputer", 82, "A"),
+    CourseGrade("IF105", "Analisis dan Perancangan Sistem", 75, "B+"),
+    CourseGrade("IF106", "Interaksi Manusia dan Komputer", 88, "A")
 )
 
 val DefaultStudentAppState = StudentAppState(
-    students = listOf(DefaultStudentProfile)
+    students = listOf(DefaultStudentProfile),
+    gradesByStudentId = mapOf(DefaultStudentProfile.studentId to FarhanGrades)
 )
 
 fun StudentAppState.findStudent(studentId: String): StudentProfile? =
@@ -41,7 +53,16 @@ fun StudentAppState.updateStudent(profile: StudentProfile): StudentAppState {
 fun StudentAppState.updateThemeMode(themeMode: ThemeMode): StudentAppState =
     copy(themeMode = themeMode)
 
-private const val FieldsPerStudent = 6
+fun StudentAppState.getGradesForStudent(studentId: String): List<CourseGrade> =
+    gradesByStudentId[studentId] ?: emptyList()
+
+fun List<CourseGrade>.averageScore(): Double =
+    if (isEmpty()) 0.0 else map { it.numericScore }.average()
+
+fun List<CourseGrade>.highestScore(): Int =
+    if (isEmpty()) 0 else maxOf { it.numericScore }
+
+private const val FieldsPerStudent = 7
 
 fun saveStudentAppState(state: StudentAppState): ArrayList<String> = arrayListOf<String>().apply {
     add(state.themeMode.name)
@@ -53,31 +74,53 @@ fun saveStudentAppState(state: StudentAppState): ArrayList<String> = arrayListOf
         add(student.semester.toString())
         add(student.email)
         add(student.phone)
+        add(student.profileImageUri ?: "")
+    }
+    add(state.gradesByStudentId.size.toString())
+    state.gradesByStudentId.forEach { (studentId, grades) ->
+        add(studentId)
+        add(grades.size.toString())
+        grades.forEach { grade ->
+            add(grade.courseCode)
+            add(grade.courseName)
+            add(grade.numericScore.toString())
+            add(grade.letterGrade)
+        }
     }
 }
 
 fun restoreStudentAppState(values: List<String>): StudentAppState {
     return runCatching {
-        val themeMode = ThemeMode.valueOf(values[0])
-        val studentCount = values[1].toInt()
-        require(studentCount >= 0)
-        require(values.size == 2 + studentCount * FieldsPerStudent)
-        val students = List(studentCount) { index ->
-            val offset = 2 + index * FieldsPerStudent
-            StudentProfile(
-                name = values[offset],
-                studentId = values[offset + 1],
-                studyProgram = values[offset + 2],
-                semester = values[offset + 3].toInt(),
-                email = values[offset + 4],
-                phone = values[offset + 5]
-            ).also {
-                require(it.studentId.isNotBlank())
-                require(it.semester > 0)
-            }
+        var cursor = 0
+        val themeMode = ThemeMode.valueOf(values[cursor++])
+        val studentCount = values[cursor++].toInt()
+        val students = List(studentCount) {
+            val name = values[cursor++]
+            val studentId = values[cursor++]
+            val studyProgram = values[cursor++]
+            val semester = values[cursor++].toInt()
+            val email = values[cursor++]
+            val phone = values[cursor++]
+            val imageUri = values[cursor++].ifEmpty { null }
+            StudentProfile(name, studentId, studyProgram, semester, email, phone, imageUri)
         }
-        require(students.map(StudentProfile::studentId).distinct().size == students.size)
-        StudentAppState(students = students, themeMode = themeMode)
+        
+        val gradesMapCount = values[cursor++].toInt()
+        val gradesByStudentId = mutableMapOf<String, List<CourseGrade>>()
+        repeat(gradesMapCount) {
+            val studentId = values[cursor++]
+            val gradeCount = values[cursor++].toInt()
+            val grades = List(gradeCount) {
+                val code = values[cursor++]
+                val name = values[cursor++]
+                val score = values[cursor++].toInt()
+                val letter = values[cursor++]
+                CourseGrade(code, name, score, letter)
+            }
+            gradesByStudentId[studentId] = grades
+        }
+        
+        StudentAppState(students = students, themeMode = themeMode, gradesByStudentId = gradesByStudentId)
     }.getOrElse { DefaultStudentAppState }
 }
 

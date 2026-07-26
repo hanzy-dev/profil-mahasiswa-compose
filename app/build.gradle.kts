@@ -66,6 +66,9 @@ dependencies {
     // Material Icons Extended (opsional, untuk icon tambahan)
     implementation("androidx.compose.material:material-icons-extended")
 
+    // Coil for image loading
+    implementation(libs.coil.compose)
+
     // Debug tools
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)

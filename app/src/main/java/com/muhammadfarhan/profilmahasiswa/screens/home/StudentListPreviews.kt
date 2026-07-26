@@ -35,6 +35,39 @@ private fun StudentListEmptyPreview() {
     ProfilMahasiswaTheme { PreviewList(emptyList()) }
 }
 
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
+    name = "Daftar - Layar Kecil",
+    device = "spec:width=360dp,height=640dp,dpi=420"
+)
+@Composable
+private fun StudentListSmallScreenPreview() {
+    ProfilMahasiswaTheme { PreviewList(previewStudents) }
+}
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
+    name = "Daftar - Teks Besar",
+    fontScale = 1.5f
+)
+@Composable
+private fun StudentListLargeTextPreview() {
+    ProfilMahasiswaTheme { PreviewList(previewStudents) }
+}
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
+    name = "Daftar - Landscape",
+    device = "spec:width=640dp,height=360dp,dpi=420"
+)
+@Composable
+private fun StudentListLandscapePreview() {
+    ProfilMahasiswaTheme { PreviewList(previewStudents) }
+}
+
 @Composable
 private fun PreviewList(students: List<StudentProfile>, darkTheme: Boolean = false) {
     StudentListScreen(

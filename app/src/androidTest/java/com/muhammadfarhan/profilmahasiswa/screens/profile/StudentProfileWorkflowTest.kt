@@ -1,19 +1,8 @@
 package com.muhammadfarhan.profilmahasiswa.screens.profile
 
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performTextClearance
-import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import com.muhammadfarhan.profilmahasiswa.MainActivity
 import com.muhammadfarhan.profilmahasiswa.screens.home.StudentListTestTags
 import org.junit.Rule
@@ -32,6 +21,9 @@ class StudentProfileWorkflowTest {
         composeRule.onNodeWithText("NIM: 23083000060").assertExists()
         composeRule.onNodeWithText("Mahasiswa Aktif").assertExists()
         composeRule.onNodeWithText("Informasi Kontak").assertExists()
+        
+        // Batch 7D: View Grades button exists in view mode
+        composeRule.onNodeWithTag(ProfileTestTags.ViewGrades).assertIsDisplayed()
     }
 
     @Test
@@ -44,6 +36,17 @@ class StudentProfileWorkflowTest {
         composeRule.onNodeWithTag(ProfileTestTags.Phone).assertIsEnabled()
         composeRule.onNodeWithTag(ProfileTestTags.Save).assertExists()
         composeRule.onNodeWithTag(ProfileTestTags.Cancel).assertExists()
+        
+        // Batch 7D: Photo action appears in edit mode
+        composeRule.onNodeWithTag(ProfileTestTags.PhotoAction).assertIsDisplayed()
+    }
+
+    @Test
+    fun photoActionHasCorrectAccessibility() {
+        enterEditMode()
+        // Default Farhan has no photo, so it should say "Pilih foto profil"
+        composeRule.onNodeWithTag(ProfileTestTags.PhotoAction)
+            .assertContentDescriptionEquals("Pilih foto profil")
     }
 
     @Test

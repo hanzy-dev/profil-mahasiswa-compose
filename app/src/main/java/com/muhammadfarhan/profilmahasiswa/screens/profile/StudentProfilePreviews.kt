@@ -10,9 +10,19 @@ private val viewPreviewState = StudentProfileUiState(
     savedProfile = DefaultStudentProfile
 )
 
+private val viewWithPhotoPreviewState = StudentProfileUiState(
+    savedProfile = DefaultStudentProfile.copy(profileImageUri = "https://example.com/photo.jpg")
+)
+
 private val editPreviewState = StudentProfileUiState(
     savedProfile = DefaultStudentProfile,
     draftProfile = DefaultStudentProfile.copy(name = "Muhammad Farhan A."),
+    isEditing = true
+)
+
+private val editWithPhotoPreviewState = StudentProfileUiState(
+    savedProfile = DefaultStudentProfile,
+    draftProfile = DefaultStudentProfile.copy(profileImageUri = "https://example.com/photo.jpg"),
     isEditing = true
 )
 
@@ -43,6 +53,8 @@ private fun PreviewProfileScreen(uiState: StudentProfileUiState, darkTheme: Bool
         onStudyProgramChange = {},
         onEmailChange = {},
         onPhoneChange = {},
+        onPickPhoto = {},
+        onViewGradesClick = {},
         onBack = {}
     )
 }
@@ -63,11 +75,27 @@ private fun ProfileDarkPreview() {
     }
 }
 
+@Preview(showBackground = true, showSystemUi = true, name = "Profil dengan Foto")
+@Composable
+private fun ProfileWithPhotoPreview() {
+    ProfilMahasiswaTheme {
+        PreviewProfileScreen(viewWithPhotoPreviewState)
+    }
+}
+
 @Preview(showBackground = true, showSystemUi = true, name = "Edit - Valid")
 @Composable
 private fun ProfileEditPreview() {
     ProfilMahasiswaTheme {
         PreviewProfileScreen(editPreviewState)
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, name = "Edit dengan Foto")
+@Composable
+private fun ProfileEditWithPhotoPreview() {
+    ProfilMahasiswaTheme {
+        PreviewProfileScreen(editWithPhotoPreviewState)
     }
 }
 
@@ -100,6 +128,19 @@ private fun ProfileSmallScreenPreview() {
 )
 @Composable
 private fun ProfileLargeTextPreview() {
+    ProfilMahasiswaTheme {
+        PreviewProfileScreen(viewPreviewState)
+    }
+}
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true,
+    name = "Landscape",
+    device = "spec:width=640dp,height=360dp,dpi=420"
+)
+@Composable
+private fun ProfileLandscapePreview() {
     ProfilMahasiswaTheme {
         PreviewProfileScreen(viewPreviewState)
     }

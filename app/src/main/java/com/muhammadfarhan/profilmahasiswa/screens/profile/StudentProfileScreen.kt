@@ -1,13 +1,8 @@
 package com.muhammadfarhan.profilmahasiswa.screens.profile
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
@@ -39,6 +34,8 @@ fun StudentProfileScreen(
     onStudyProgramChange: (String) -> Unit,
     onEmailChange: (String) -> Unit,
     onPhoneChange: (String) -> Unit,
+    onPickPhoto: () -> Unit,
+    onViewGradesClick: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -50,7 +47,7 @@ fun StudentProfileScreen(
 
     Scaffold(
         modifier = modifier.testTag(ProfileTestTags.Screen),
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState, modifier = Modifier.testTag(ProfileTestTags.Snackbar)) },
         topBar = {
             AppTopBar(
                 title = stringResource(
@@ -79,46 +76,67 @@ fun StudentProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
-                ProfileHeader(profile = uiState.displayedProfile)
-                Spacer(modifier = Modifier.height(24.dp))
-                if (uiState.isEditing) {
-                    ProfileDetailsCard(
-                        profile = uiState.draftProfile,
-                        fieldErrors = uiState.fieldErrors,
-                        nameFocusRequester = nameFocusRequester,
-                        studyProgramFocusRequester = studyProgramFocusRequester,
-                        onNameNext = { studyProgramFocusRequester.requestFocus() },
-                        onStudyProgramNext = { emailFocusRequester.requestFocus() },
-                        onNameChange = onNameChange,
-                        onStudyProgramChange = onStudyProgramChange
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                ContactInformationCard(
+                
+                ProfileHeader(
                     profile = uiState.displayedProfile,
                     isEditing = uiState.isEditing,
-                    fieldErrors = uiState.fieldErrors,
-                    emailFocusRequester = emailFocusRequester,
-                    phoneFocusRequester = phoneFocusRequester,
-                    onEmailNext = { phoneFocusRequester.requestFocus() },
-                    onPhoneDone = { focusManager.clearFocus() },
-                    onEmailChange = onEmailChange,
-                    onPhoneChange = onPhoneChange
+                    onPickPhoto = onPickPhoto
                 )
+                
                 Spacer(modifier = Modifier.height(24.dp))
-                ProfileActions(
-                    isEditing = uiState.isEditing,
-                    saveEnabled = uiState.canSave,
-                    onEditClick = onEditClick,
-                    onSaveClick = {
-                        focusManager.clearFocus()
-                        onSaveClick()
+                
+                AnimatedContent(
+                    targetState = uiState.isEditing,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(250)) togetherWith fadeOut(animationSpec = tween(250))
                     },
-                    onCancelClick = {
-                        focusManager.clearFocus()
-                        onCancelClick()
+                    label = "ProfileContentTransition"
+                ) { isEditing ->
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        if (isEditing) {
+                            ProfileDetailsCard(
+                                profile = uiState.draftProfile,
+                                fieldErrors = uiState.fieldErrors,
+                                nameFocusRequester = nameFocusRequester,
+                                studyProgramFocusRequester = studyProgramFocusRequester,
+                                onNameNext = { studyProgramFocusRequester.requestFocus() },
+                                onStudyProgramNext = { emailFocusRequester.requestFocus() },
+                                onNameChange = onNameChange,
+                                onStudyProgramChange = onStudyProgramChange
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                        
+                        ContactInformationCard(
+                            profile = uiState.displayedProfile,
+                            isEditing = isEditing,
+                            fieldErrors = uiState.fieldErrors,
+                            emailFocusRequester = emailFocusRequester,
+                            phoneFocusRequester = phoneFocusRequester,
+                            onEmailNext = { phoneFocusRequester.requestFocus() },
+                            onPhoneDone = { focusManager.clearFocus() },
+                            onEmailChange = onEmailChange,
+                            onPhoneChange = onPhoneChange
+                        )
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        ProfileActions(
+                            isEditing = isEditing,
+                            saveEnabled = uiState.canSave,
+                            onEditClick = onEditClick,
+                            onSaveClick = {
+                                focusManager.clearFocus()
+                                onSaveClick()
+                            },
+                            onCancelClick = {
+                                focusManager.clearFocus()
+                                onCancelClick()
+                            },
+                            onViewGradesClick = onViewGradesClick
+                        )
                     }
-                )
+                }
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
